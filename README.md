@@ -13,15 +13,15 @@ Repositorio: [carevalojesus/PokeSwap](https://github.com/carevalojesus/PokeSwap)
 ## Reglas del juego
 
 - La meta es completar las **150 especies del #001 al #150**.
-- Cada alumno recibe **un inicial aleatorio entre cualquiera de los 150**. No está limitado a los tres iniciales tradicionales.
+- Cada alumno recibe **un inicial aleatorio entre las 151 especies disponibles**. Mew y Mewtwo también pueden salir, con una probabilidad reducida del 0,1 % cada uno.
 - El QR de bienvenida del docente entrega **tres Pokémon adicionales** por alumno en un único canje.
-- Los sorteos son independientes, permiten repetidos y usan probabilidades fijas: Mewtwo es más difícil de obtener. El docente puede crear más PokéDrops para seguir entregando ejemplares.
+- Los sorteos son independientes, permiten repetidos y usan probabilidades fijas: Mew y Mewtwo son igualmente difíciles de obtener. El docente puede crear más PokéDrops para seguir entregando ejemplares.
 - Registro más primer PokéDrop dejan al alumno con **cuatro ejemplares**, que pueden ser de especies iguales o diferentes.
 - Los repetidos se acumulan: `Pikachu ×5` representa cinco ejemplares individuales, no cinco especies diferentes.
 - Se protege un ejemplar por especie y solo se intercambian los sobrantes. Cinco Pikachu permiten ofrecer cuatro, si no hay reservas activas.
 - Los intercambios son uno por uno, requieren propuesta y aceptación, y transfieren ambos ejemplares o ninguno.
-- El ranking cuenta especies únicas; los alumnos con la misma cantidad comparten posición.
-- Mew #151 queda fuera de esta versión y de todos sus sorteos.
+- El ranking cuenta especies únicas del #001 al #150; los alumnos con la misma cantidad comparten posición. Mew se muestra como colección adicional y no cambia la puntuación.
+- Mew #151 está incluido en el MVP, en el catálogo y en los sorteos normales. Se muestra como una entrada adicional en la Pokédex, obtenida o pendiente; no aumenta el denominador de la meta de 150 ni su porcentaje.
 
 No se fuerzan duplicados: si un alumno recibe cuatro especies diferentes, puede seguir coleccionando mediante PokéDrops hasta obtener ejemplares adicionales de alguna especie. No se garantiza completar los 150 durante una clase.
 
@@ -95,23 +95,23 @@ La sustitución utiliza una versión de perfil para detectar cargas concurrentes
 
 D1 y R2 no se tratan como una sola transacción. Cada carga tiene un registro persistente con clave, propietario, estado y fecha; permite conciliar archivos sin referencia si el proceso se interrumpe. Una misma clave de idempotencia de carga recupera su operación en lugar de crear varias imágenes. El MVP debe incluir una tarea programada del Worker para resolver cargas abandonadas y borrados pendientes. La ruta de imagen usa caché privada con revalidación para reflejar cambios sin conservar fotos antiguas en el service worker.
 
-## Probabilidades y dificultad de Mewtwo
+## Probabilidades y dificultad de Mew y Mewtwo
 
-**Mewtwo #150 puede salir como inicial o en cualquiera de los tres sorteos de un PokéDrop, pero debe ser difícil de obtener.** Se fija este balance inicial para implementar el MVP:
+**Mewtwo #150 y Mew #151 pueden salir como inicial o en cualquiera de los tres sorteos de un PokéDrop. Ambos tienen la misma dificultad: 0,1 % por especie y por sorteo.** Se fija este balance inicial para implementar el MVP:
 
 | Resultado | Probabilidad por sorteo |
 |---|---:|
 | Mewtwo #150 | **0,1 %** |
-| Conjunto de especies #001–#149 | **99,9 %**, distribuido por igual entre esas 149 especies |
-| Mew #151 | **0 %**, excluido |
+| Mew #151 | **0,1 %** |
+| Conjunto de especies #001–#149 | **99,8 %**, distribuido por igual entre esas 149 especies |
 
-La probabilidad individual de cada especie #001–#149 es `99,9 % / 149`, aproximadamente `0,67047 %`. La distribución total suma 100 %. La dificultad especial de Mewtwo es una regla de este juego, no un valor tomado de PokéAPI. Las demás especies no tienen diferencias de rareza en este MVP.
+La probabilidad individual de cada especie #001–#149 es `99,8 % / 149`, aproximadamente `0,66980 %`. La distribución total suma 100 %: 0,1 % para Mewtwo, 0,1 % para Mew y 99,8 % para las demás especies. La dificultad especial de Mew y Mewtwo es una regla de este juego, no un valor tomado de PokéAPI. Las demás especies no tienen diferencias de rareza en este MVP.
 
-Algoritmo del servidor: obtener un entero uniforme de 0 a 999 con aleatoriedad segura; si sale 0, entregar Mewtwo. En los otros 999 casos, sortear uniformemente un ID entre 1 y 149. La selección de enteros evita sesgo por aplicar módulo directamente a bytes aleatorios.
+Algoritmo del servidor: obtener un entero uniforme de 0 a 999 con aleatoriedad segura; si sale 0, entregar Mewtwo; si sale 1, entregar Mew. En los otros 998 casos, sortear uniformemente un ID entre 1 y 149. La selección de enteros evita sesgo por aplicar módulo directamente a bytes aleatorios.
 
-Se utiliza la misma función y configuración para el inicial y cada premio del docente. Cada sorteo es independiente, con reemplazo: un Mewtwo previo no aumenta ni reduce las probabilidades, y también puede salir repetido. Un primer Mewtwo queda protegido; un segundo puede intercambiarse bajo las reglas normales.
+Se utiliza la misma función y configuración para el inicial y cada premio del docente. Cada sorteo es independiente, con reemplazo: poseer Mew o Mewtwo no aumenta ni reduce las probabilidades y ambos pueden salir repetidos. El primer ejemplar de cada especie queda protegido; los adicionales pueden intercambiarse bajo las reglas normales. Obtener Mew no requiere completar previamente los 150 ni participar en un evento especial.
 
-El 0,1 % es una probabilidad por intento, **no una entrega garantizada cada 1000 sorteos**. No se garantiza que Mewtwo aparezca en una clase ni que todos completen la Pokédex. No hay corrección de mala suerte ni premios forzados. El balance es una constante versionada en el backend, sin editor administrativo durante esta jornada; cambiarla en el futuro no modifica premios ya guardados.
+El 0,1 % es una probabilidad por especie y por intento, **no una entrega garantizada cada 1000 sorteos**. No se garantiza que Mew o Mewtwo aparezcan en una clase ni que todos completen la Pokédex. No hay corrección de mala suerte ni premios forzados. El balance es una constante versionada en el backend, sin editor administrativo durante esta jornada; cambiarla en el futuro no modifica premios ya guardados.
 
 ## Ejemplo de colección
 
@@ -141,7 +141,7 @@ Estados del intercambio: `open → pending → completed`, con salidas finales `
 ## MVP de la jornada
 
 1. Registro con ID de SENATI, nombres, apellidos y fecha de nacimiento; alias generado, perfil con edad y foto opcional; inicio/cierre de sesión y cuenta docente.
-2. Inicial aleatorio, Mewtwo con probabilidad del 0,1 %, catálogo de 150 especies, colección agrupada y Pokédex.
+2. Inicial aleatorio, Mew y Mewtwo con probabilidad del 0,1 % cada uno, catálogo de 151 especies, colección agrupada y Pokédex con meta principal de 150.
 3. PokéDrops de tres ejemplares: creación, canje único, consulta y cancelación.
 4. QR de intercambio, propuestas, reservas, aceptación e historial.
 5. Ranking por especies únicas y panel administrativo básico.
@@ -149,7 +149,7 @@ Estados del intercambio: `open → pending → completed`, con salidas finales `
 
 Las actualizaciones se realizan por HTTP. Las pantallas activas de intercambio consultan el estado cada tres segundos; colección y ranking se refrescan tras cambios y al volver a sus pantallas.
 
-Quedan fuera de hoy: WebSockets, Durable Objects, Mew, rarezas y probabilidades configurables, logros, niveles, chat, notificaciones push, equipos, misiones, premios de especies específicas y estadísticas avanzadas.
+Quedan fuera de hoy: WebSockets, Durable Objects, rarezas y probabilidades configurables, logros, niveles, chat, notificaciones push, equipos, misiones, premios de especies específicas y estadísticas avanzadas.
 
 ## Arquitectura prevista
 
@@ -210,7 +210,7 @@ Referencias de infraestructura: [acceso a R2 desde Workers](https://developers.c
 ## Orden de implementación
 
 1. Crear proyecto, Worker, D1, bucket privado R2 y despliegue mínimo.
-2. Preparar migraciones de cuentas, perfiles y juego; catálogo #001–#150 y distribución de probabilidades.
+2. Preparar migraciones de cuentas, perfiles y juego; catálogo #001–#151 y distribución de probabilidades.
 3. Implementar registro SENATI, alias persistente, autenticación, cálculo de edad y entrega inicial única.
 4. Implementar edición de perfil, foto opcional en R2 y limpieza de cargas/borrados pendientes.
 5. Implementar colección, Pokédex y duplicados.
@@ -234,12 +234,13 @@ El objetivo es entregar este flujo funcional durante la jornada. La integridad d
 - [ ] Cargas inválidas se rechazan; un alumno no puede modificar la foto de otro.
 - [ ] Sustituir o eliminar una foto actualiza el perfil; las tareas de limpieza no eliminan archivos vigentes.
 - [ ] Un fallo entre R2 y D1 y un reintento de carga no dejan una referencia rota ni varias operaciones confirmadas.
-- [ ] Inicial y PokéDrops comparten probabilidades: Mewtwo 0,1 %, otras 149 especies 99,9 % en conjunto y Mew 0 %.
-- [ ] Casos controlados verifican las dos ramas del sorteo y permiten Mewtwo repetido sin exigir su aparición en una muestra aleatoria.
+- [ ] Inicial y PokéDrops comparten probabilidades: Mewtwo 0,1 %, Mew 0,1 % y otras 149 especies 99,8 % en conjunto.
+- [ ] Casos controlados verifican las tres ramas del sorteo y permiten Mew y Mewtwo repetidos sin exigir su aparición en una muestra aleatoria.
 
 - [ ] Un inicial más un PokéDrop producen cuatro ejemplares, admitiendo repetidos.
 - [ ] Cinco Pikachu se muestran como cantidad 5 y una especie en la Pokédex.
-- [ ] El inicial y los PokéDrops solo generan IDs del 1 al 150.
+- [ ] El inicial y los PokéDrops solo generan IDs del 1 al 151, incluidos Mew y Mewtwo.
+- [ ] Mew se guarda y muestra en la colección y como entrada adicional en la Pokédex; sus duplicados se intercambian, pero no modifican el progreso ni el ranking de los primeros 150.
 - [ ] Reintentar un registro o canje no duplica recompensas.
 - [ ] Solo pueden intercambiarse duplicados propios y disponibles.
 - [ ] La aceptación transfiere ambos ejemplares o ninguno, una sola vez.
