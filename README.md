@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** documentación del MVP definida. El código, la configuración de infraestructura y el despliegue están pendientes. La jornada de desarrollo prevista es el 11 de septiembre de 2026.
+**Estado actual:** documentación del MVP y arquitectura definidas. El código, la configuración de infraestructura y el despliegue están pendientes. La jornada de desarrollo prevista es el 11 de septiembre de 2026.
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -153,11 +153,22 @@ Quedan fuera de hoy: WebSockets, Durable Objects, rarezas y probabilidades confi
 
 ## Arquitectura prevista
 
+La [arquitectura técnica completa](ARQUITECTURA.md) define las decisiones, responsabilidades, experiencia visual y sonora, estructura del código, pruebas y fases de entrega. Se adopta un **monolito modular**, con un repositorio y un despliegue que sirve la interfaz y `/api` desde el mismo dominio.
+
+| Área | Tecnologías previstas |
+|---|---|
+| Interfaz | React, TypeScript, Vite, Tailwind CSS, Lucide React y shadcn/ui. |
+| Navegación, datos y formularios | React Router, TanStack Query, React Hook Form y Zod. |
+| Animaciones y sonidos | Motion para React y Howler.js; sonido desactivado inicialmente y movimiento reducido respetado. |
+| QR y fotos | qrcode.react, qr-scanner y react-easy-crop con exportación mediante Canvas. |
+| Backend y persistencia | Hono en Cloudflare Workers, D1 con Drizzle ORM y R2 privado. |
+| PWA y pruebas | vite-plugin-pwa, Vitest con integración de Workers y Playwright. |
+
 ```text
-React + Vite + TypeScript
+React + Vite + TypeScript + Tailwind CSS
           │ HTTPS
           ▼
-Cloudflare Worker — API y archivos estáticos
+Cloudflare Worker + Hono — API y archivos estáticos
           │
           ▼
 Cloudflare D1 — cuentas, perfiles, colecciones y operaciones
@@ -216,7 +227,7 @@ Referencias de infraestructura: [acceso a R2 desde Workers](https://developers.c
 5. Implementar colección, Pokédex y duplicados.
 6. Implementar PokéDrops para obtener tres ejemplares adicionales.
 7. Implementar intercambio completo y verificar concurrencia.
-8. Completar ranking, administración, PWA y verificación móvil.
+8. Completar ranking y administración; incorporar animaciones, audio opcional, PWA y verificación móvil según las [fases de entrega](ARQUITECTURA.md#fases-de-entrega).
 
 El objetivo es entregar este flujo funcional durante la jornada. La integridad de canjes e intercambios forma parte del MVP; el acabado visual puede simplificarse para priorizarlo.
 
@@ -253,6 +264,6 @@ Las pruebas de repetidos usan datos controlados para verificar reglas sin depend
 
 ## Documentación y ejecución
 
-Este README concentra la documentación vigente del proyecto: registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación.
+Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Ambos documentos describen trabajo previsto; no acreditan funciones implementadas.
 
 Todavía no existen comandos de instalación, desarrollo, migración ni despliegue disponibles en este repositorio local. Se documentarán aquí cuando estén implementados y verificados. No se deben incluir credenciales ni secretos en Git.
