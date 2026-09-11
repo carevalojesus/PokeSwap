@@ -10,6 +10,8 @@ PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ej
 
 Repositorio: [carevalojesus/PokeSwap](https://github.com/carevalojesus/PokeSwap).
 
+**Organización:** [tablero de GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2) · [issues](https://github.com/carevalojesus/PokeSwap/issues) · [flujo de trabajo](TRABAJO.md). La implementación se organiza por issues con dependencias, prioridades, fases y criterios de aceptación.
+
 ## Reglas del juego
 
 - La meta es completar las **150 especies del #001 al #150**.
