@@ -1,6 +1,6 @@
 # Sesiones, permisos y cuenta docente
 
-La tarea #5 conecta el registro atómico con autenticación mediante ID SENATI y contraseña. Implementa rutas Hono, cookies opacas, sesiones persistidas en D1, controles de origen, permisos y provisión docente mediante CLI. Las pantallas de acceso y navegación siguen en #6/#7; la administración paginada completa corresponde a #16.
+La tarea #5 conecta el registro atómico con autenticación mediante ID SENATI y contraseña. Implementa rutas Hono, cookies opacas, sesiones persistidas en D1, controles de origen, permisos y provisión docente mediante CLI. La navegación y las pantallas de acceso están conectadas en #6/#7; ver [sesión en el cliente](ACCESO.md). La administración paginada completa corresponde a #16.
 
 ## Módulo y sesión
 

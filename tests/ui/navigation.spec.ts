@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/me', (route) =>
+    route.fulfill({ status: 401, json: { code: 'UNAUTHENTICATED' } }),
+  );
+});
+
 test('catalog search, filters, accessible detail and recovery', async ({
   page,
 }) => {
@@ -40,7 +46,7 @@ test('catalog search, filters, accessible detail and recovery', async ({
   await expect(list).toContainText('Mewtwo');
 });
 
-test('direct routes and unknown paths show honest states without private requests', async ({
+test('private routes require a session and unknown paths remain recoverable', async ({
   page,
 }) => {
   const privateRequests: string[] = [];
@@ -48,22 +54,22 @@ test('direct routes and unknown paths show honest states without private request
     if (new URL(request.url()).pathname.startsWith('/api/'))
       privateRequests.push(request.url());
   });
-  for (const [path, title] of [
-    ['/coleccion', 'Mi colección'],
-    ['/intercambios', 'Intercambios'],
-    ['/ranking', 'Ranking de la clase'],
-    ['/perfil', 'Mi perfil'],
-    ['/docente', 'Tu clase, lista para descubrir'],
-    ['/docente/alumnos', 'Alumnos'],
-    ['/docente/pokedrops', 'PokéDrops'],
+  for (const path of [
+    '/coleccion',
+    '/intercambios',
+    '/ranking',
+    '/perfil',
+    '/docente',
+    '/docente/alumnos',
+    '/docente/pokedrops',
   ]) {
     await page.goto(path);
+    await expect(page).toHaveURL('/ingresar');
     await expect(
-      page.getByRole('heading', { level: 1, name: title }),
+      page.getByRole('heading', { level: 1, name: 'Entra a tu aventura' }),
     ).toBeVisible();
-    await expect(page.getByRole('main')).toContainText('disponible');
     await page.reload();
-    await expect(page).toHaveTitle(`${title} · PokéSwap Classroom`);
+    await expect(page).toHaveTitle('Entra a tu aventura · PokéSwap Classroom');
   }
   await page.goto('/una-ruta-inexistente');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
@@ -71,7 +77,9 @@ test('direct routes and unknown paths show honest states without private request
   );
   await page.getByRole('link', { name: 'Volver al inicio' }).click();
   await expect(page).toHaveURL('/');
-  expect(privateRequests).toEqual([]);
+  expect(
+    privateRequests.every((url) => new URL(url).pathname === '/api/me'),
+  ).toBe(true);
 });
 
 test('navigation, history and heading focus', async ({ page, isMobile }) => {
@@ -104,12 +112,7 @@ test('navigation, history and heading focus', async ({ page, isMobile }) => {
       .getByRole('dialog')
       .getByRole('link', { name: 'Espacio docente' })
       .click();
-    await expect(page).toHaveURL('/docente');
-    await page
-      .getByRole('navigation', { name: 'Navegación inferior' })
-      .getByRole('link', { name: 'Alumnos' })
-      .click();
-    await expect(page).toHaveURL('/docente/alumnos');
+    await expect(page).toHaveURL('/ingresar');
   }
 });
 

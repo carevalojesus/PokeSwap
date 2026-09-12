@@ -2,7 +2,7 @@
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
-**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las issues #3–#5 añaden catálogo, sorteo, registro y autenticación. La issue #6 incorpora navegación, componentes y Pokédex pública; las pantallas de acceso, PokéDrops, intercambios y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
+**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las issues #3–#5 añaden catálogo, sorteo, registro y autenticación. La issue #6 incorpora navegación, componentes y Pokédex pública; la issue #7 conecta formularios, sesión y datos privados. PokéDrops, intercambios y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
 
 El [README](README.md) define las reglas del producto, perfiles, probabilidades y contratos previstos. Este documento establece cómo implementarlos y cómo añadir una experiencia visual y sonora coherente. Las bibliotecas de la base están fijadas en `package.json` y `package-lock.json`. Las restantes se incorporarán al implementar sus respectivas issues; figurar en esta arquitectura no implica estar instaladas.
 
@@ -43,7 +43,7 @@ React Router organiza las pantallas. TanStack Query administra los datos recuper
 
 Zod permitirá compartir esquemas de formato entre cliente y servidor. El servidor siempre vuelve a validar datos, sesión, permisos y reglas del juego; la validación del formulario solo mejora la experiencia. [Zod y su integración con formularios](https://zod.dev/)
 
-La tarea #6 incorpora React Router, navegación móvil/lateral, rutas de alumno/docente y componentes shadcn/Radix adaptados. El catálogo público ya permite buscar y consultar fichas. La conexión de sesión y formularios continúa en #7; ver [interfaz implementada y límites](docs/INTERFAZ.md).
+La tarea #6 incorpora React Router, navegación móvil/lateral, rutas de alumno/docente y componentes shadcn/Radix adaptados. El catálogo público ya permite buscar y consultar fichas. La tarea #7 conecta React Hook Form, Zod y TanStack Query con registro/login, sesión, perfil e inicial persistidos; ver [acceso implementado](docs/ACCESO.md). Consultar [interfaz implementada y límites](docs/INTERFAZ.md).
 
 ### Dirección visual
 
@@ -232,7 +232,7 @@ El alcance completo es exigente para una jornada. La integridad del juego y la p
 ## Decisiones pendientes de implementación
 
 - Incorporar las dependencias de las funciones restantes. Las issues #1 y #2 fijan la base, Drizzle, el esquema D1 y los comandos de migración; ver [modelo de datos](docs/DATOS.md).
-- Conectar las pantallas de acceso con la API de autenticación implementada en #5 y medir capacidad con la clase.
+- Medir capacidad de registro/login con la clase; la integración de formularios y sesión ya está implementada en #7.
 - Implementar la aceptación completa de intercambios sobre el esquema de reservas y el patrón de aserciones D1 probado en #2. Las pruebas de almacenamiento no sustituyen la validación del servicio de #14.
 - Seleccionar y verificar la validación del contenido WebP en el Worker.
 - Medir capacidad para la clase y comprobar cámara, audio y PWA en los dispositivos previstos.
