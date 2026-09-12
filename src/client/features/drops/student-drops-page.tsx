@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { Link } from 'react-router';
 import {
-  redeemDropSchema,
   dropPreviewSchema,
   rewardSchema,
   type DropReward,
@@ -19,17 +18,38 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { PokemonImage } from '../pokedex/pokemon-card';
 import { speciesName } from '../pokedex/species-name';
+import { Camera } from 'lucide-react';
+import { parseDropInput } from './drop-link';
 import { dateLabel, dropRequest, useDropAction, useDropClock } from './api';
 
-export function StudentDropsPage() {
-  const { profile } = useSession();
+const DropScanner = lazy(() => import('./drop-scanner'));
+const inputSchema = z.object({
+  code: z.string().transform((value, ctx) => {
+    const code = parseDropInput(value);
+    if (!code) {
+      ctx.addIssue({ code: 'custom', message: 'Código o enlace inválido' });
+      return z.NEVER;
+    }
+    return code;
+  }),
+});
+
+export function StudentDropsPage({
+  initialCode = '',
+}: {
+  initialCode?: string;
+}) {
+  const { profile, loading, failed, action: sessionAction } = useSession();
+  const [camera, setCamera] = useState(false);
+  if (camera && (loading || failed || sessionAction !== 'idle'))
+    setCamera(false);
   const userId = profile!.user.id;
   const client = useQueryClient();
   const action = useDropAction();
   const now = useDropClock();
-  const form = useForm<z.infer<typeof redeemDropSchema>>({
-    resolver: zodResolver(redeemDropSchema),
-    defaultValues: { code: '' },
+  const form = useForm<z.infer<typeof inputSchema>>({
+    resolver: zodResolver(inputSchema),
+    defaultValues: { code: initialCode },
   });
   const [preview, setPreview] = useState<z.infer<
     typeof dropPreviewSchema
@@ -42,6 +62,7 @@ export function StudentDropsPage() {
     void refreshCollection(client);
   }
   function consult(input: { code: string }) {
+    setCamera(false);
     setPreview(null);
     setReward(null);
     setActiveCode(input.code);
@@ -62,8 +83,32 @@ export function StudentDropsPage() {
       <PageHeading
         eyebrow="Un regalo para tu aventura"
         title="Canjear PokéDrop"
-        description="Pega el código que comparte tu docente. Consultarlo no entrega premios: tú confirmas el canje."
+        description="Escanea el QR o pega el enlace o código que comparte tu docente. Consultarlo no entrega premios: tú confirmas el canje."
       />
+      {camera && !loading && !failed && sessionAction === 'idle' ? (
+        <Suspense fallback={<p role="status">Preparando cámara…</p>}>
+          <DropScanner
+            onClose={() => setCamera(false)}
+            onCode={(code) => {
+              setCamera(false);
+              setPreview(null);
+              setReward(null);
+              form.setValue('code', code, { shouldValidate: true });
+              form.setFocus('code');
+            }}
+          />
+        </Suspense>
+      ) : (
+        <Button
+          variant="outline"
+          className="self-start"
+          disabled={action.busy}
+          onClick={() => setCamera(true)}
+        >
+          <Camera aria-hidden="true" className="size-5" />
+          Escanear QR
+        </Button>
+      )}
       <form
         aria-label="Consultar PokéDrop"
         onSubmit={form.handleSubmit(consult)}
@@ -71,7 +116,7 @@ export function StudentDropsPage() {
         noValidate
       >
         <label htmlFor="student-drop-code" className="font-medium">
-          Código del PokéDrop
+          Código del PokéDrop o enlace
         </label>
         <Input
           id="student-drop-code"
@@ -88,7 +133,8 @@ export function StudentDropsPage() {
         />
         {form.formState.errors.code && (
           <p role="alert" className="text-base text-rose-800">
-            Pega el código completo de 64 caracteres que te entregó el docente.
+            Pega el código completo de 64 caracteres o el enlace de este sitio
+            que te entregó el docente.
           </p>
         )}
         <Button type="submit" variant="outline" disabled={action.busy}>

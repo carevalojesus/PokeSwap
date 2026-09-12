@@ -142,6 +142,8 @@ Tiene **cuatro ejemplares**, **dos especies únicas** y dos ejemplares disponibl
 | Después de participar | Se recuperan los mismos tres resultados ante reintentos | La propuesta tiene 120 segundos para ser aceptada |
 | Cantidad de participantes | Sin cupo global de alumnos en el MVP | Dos alumnos distintos |
 
+El docente comparte QR, enlace o código desde su entrega. El alumno puede abrir el enlace, pegar el enlace o el código o pulsar **Escanear QR**. Si no concede acceso a la cámara, el enlace y el código siguen disponibles.
+
 Consultar un QR no entrega ni transfiere ejemplares. El servidor valida sesión, permisos, estado y vencimiento antes de cada mutación. La vigencia del QR de intercambio y el plazo de la propuesta son independientes.
 
 Estados del intercambio: `open → pending → completed`, con salidas finales `rejected`, `cancelled` o `expired` según la etapa. Los ejemplares reservados se liberan al cerrar la operación.
@@ -336,7 +338,7 @@ Las pruebas de humo verifican inicio, colección, Pokédex, ruta docente, fallba
 
 ### Despliegue y credenciales
 
-**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable, Pokédex pública, registro/login, perfil e inicial persistentes. La colección incluye cantidades, reservas y progreso. Los PokéDrops están implementados mediante código; QR/cámara e intercambios siguen pendientes.
+**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable, Pokédex pública, registro/login, perfil e inicial persistentes. La colección incluye cantidades, reservas y progreso. Los PokéDrops incluyen QR, enlace y código, con cámara bajo demanda y confirmación de canje. Los intercambios siguen pendientes.
 
 La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classroom`. Vite genera la configuración final del despliegue junto al build. Los scripts usan Wrangler instalado en el proyecto, sin depender de la versión global.
 

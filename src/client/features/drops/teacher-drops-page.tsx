@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
@@ -15,6 +15,8 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { PageState } from '../../components/page-state';
 import { dateLabel, dropRequest, useDropAction, useDropClock } from './api';
+
+const DropShare = lazy(() => import('./drop-share'));
 
 const stateLabel = {
   active: 'Activo',
@@ -163,6 +165,11 @@ export function TeacherDropsPage() {
           </p>
           {state(selected.drop) === 'active' && (
             <>
+              {selected.code && (
+                <Suspense fallback={<p role="status">Preparando QR…</p>}>
+                  <DropShare key={selected.code} code={selected.code} />
+                </Suspense>
+              )}
               <label htmlFor="drop-code" className="font-medium">
                 Código para compartir con tu clase
               </label>
