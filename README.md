@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. Las sesiones, los endpoints de autenticación y la integración con PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. Las sesiones, registro/login/logout y permisos ya están implementados en la API; las pantallas de acceso y la integración con PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -45,7 +45,7 @@ El ID de SENATI se almacena como **texto**, conservando ceros iniciales. Se reco
 
 Nombres y apellidos se recortan, normalizan espacios y conservan su escritura y tildes; cada campo admite de 1 a 100 caracteres y no acepta solo espacios. Dos alumnos pueden tener el mismo nombre completo, pero no el mismo ID de SENATI.
 
-El servicio de registro está implementado en la tarea #4; su conexión HTTP y sesión se realizará en #5. Ver [registro atómico](docs/REGISTRO.md). El registro guarda en una única operación de D1 la cuenta, el nombre de entrenador, el ejemplar inicial y su historial. La restricción única del ID evita cuentas y premios duplicados incluso ante solicitudes simultáneas. Un intento con un ID existente indica que debe iniciarse sesión; no reemplaza contraseña, datos ni colección. Recuperar el resultado de una cuenta existente requiere autenticarse.
+El servicio de registro de #4 está conectado con HTTP y sesiones en #5. Ver [registro atómico](docs/REGISTRO.md) y [autenticación](docs/AUTENTICACION.md). El registro guarda en una única operación de D1 la cuenta, el nombre de entrenador, el ejemplar inicial y su historial. La restricción única del ID evita cuentas y premios duplicados incluso ante solicitudes simultáneas. Un intento con un ID existente indica que debe iniciarse sesión; no reemplaza contraseña, datos ni colección. Recuperar el resultado de una cuenta existente requiere autenticarse.
 
 Una vez confirmada la cuenta se establece la sesión. Si falla la entrega de la respuesta o la creación de la sesión, el alumno puede iniciar sesión con sus credenciales y recuperar el perfil y el mismo inicial ya guardados.
 
@@ -190,7 +190,7 @@ La PWA cachea su shell, pero las consultas actualizadas y todas las operaciones 
 
 ## Persistencia y API de perfiles
 
-El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/DATOS.md) detalla tablas, restricciones y límites; las rutas de negocio siguen pendientes:
+El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/DATOS.md) detalla tablas, restricciones y límites; la API de autenticación y perfil privado está disponible; las demás rutas se incorporan en sus issues:
 
 | Entidad | Información persistida |
 |---|---|
@@ -203,11 +203,14 @@ El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/
 
 `users.age` no existe: la edad se calcula en las respuestas privadas. Los objetos de R2 están asociados a una operación y a un usuario; ninguna foto se considera persistida solamente por estar en memoria o en `localStorage`.
 
-| Método y ruta | Contrato previsto |
+Registro, login, logout, sesión, perfil propio y consulta docente individual están implementados; las modificaciones de perfil/foto y el listado paginado siguen pendientes. Ver [contratos y seguridad](docs/AUTENTICACION.md).
+
+| Método y ruta | Contrato |
 |---|---|
 | `POST /api/auth/register` | Recibe `senatiId`, `firstNames`, `lastNames`, `birthDate` y `password`; crea cuenta, alias e inicial. No acepta rol, alias o Pokémon impuestos por el cliente. |
 | `POST /api/auth/login` | Recibe `senatiId` y `password`; recupera la misma cuenta y colección. |
 | `POST /api/auth/logout` | Revoca la sesión actual. |
+| `GET /api/auth/session` | Devuelve ID interno, rol y vencimiento de la sesión autenticada. |
 | `GET /api/me` | Devuelve perfil propio, edad calculada, alias, URL interna de foto y versión de perfil. Nunca devuelve el hash de contraseña. |
 | `PATCH /api/me/profile` | Guarda nombres, apellidos y fecha de nacimiento propios con validación y control de versión; no cambia ID de SENATI ni alias. |
 | `PUT /api/me/avatar` | Carga la imagen normalizada con clave de idempotencia y versión esperada; devuelve la referencia confirmada y nueva versión. Misma clave con otro archivo devuelve conflicto. |
@@ -304,13 +307,15 @@ Vite inicia la aplicación y el Worker local en `http://127.0.0.1:5173` si el pu
 | `npm run db:migrations:list` | Consultar migraciones pendientes en D1 local. |
 | `npm run db:migrate:test` | Aplicar migraciones a la base remota de pruebas. |
 | `npm run db:migrate:remote` | Aplicar migraciones revisadas a la base de producción. |
+| `npm run teacher:create -- --production --input .local/docente.json` | Provisionar docente mediante CLI, sin endpoint público; credenciales en archivo privado. |
+| `npm run smoke:auth -- URL ARCHIVO` | Verificar login y cierre con las credenciales locales de un docente. |
 | `npm run deploy` | Compilar y publicar con el Wrangler local del proyecto. |
 
 ### API y alcance de la base
 
 `GET /api/health` devuelve `200` con `{"status":"ok","service":"pokeswap-classroom"}` y `Cache-Control: no-store`. Solo indica que el Worker responde; no verifica base de datos, almacenamiento ni disponibilidad del juego.
 
-Las rutas `/api` y `/api/*` pasan primero por Hono. Las rutas de API inexistentes devuelven `404` JSON, incluso al abrirlas directamente en el navegador. El resto usa los archivos estáticos y fallback SPA. Por ahora las rutas de cliente muestran la pantalla inicial; aún no existe una pantalla funcional de colección ni autenticación.
+Las rutas `/api` y `/api/*` pasan primero por Hono. Las rutas de API inexistentes devuelven `404` JSON después de los controles de acceso aplicables, incluso al abrirlas directamente en el navegador. El resto usa los archivos estáticos y fallback SPA. Por ahora las rutas de cliente muestran la pantalla inicial; aún no existe una pantalla funcional de colección ni autenticación.
 
 Las pruebas de humo verifican `/`, una ruta de cliente, `/api/health` y rutas de API inexistentes, tanto con peticiones normales como de navegación. El diseño completo y las funcionalidades siguen su orden de issues.
 
@@ -322,7 +327,7 @@ La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classr
 
 Para publicar desde otra máquina, iniciar sesión con `npx wrangler login`, verificar la cuenta con `npx wrangler whoami` y ejecutar `npm run deploy`. La integración continua valida las PR; todavía no publica automáticamente ni requiere secretos de Cloudflare en GitHub.
 
-No se incluyen credenciales ni secretos en Git. `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1 está configurado con el binding `DB` y bases separadas para producción y pruebas. Validar migraciones localmente y en pruebas antes de aplicarlas a producción; `deploy` no las aplica automáticamente. Las pruebas de Vitest usan otra base temporal y no requieren acceso a tus bases remotas. R2 y los servicios del juego siguen pendientes.
+No se incluyen credenciales ni secretos en Git. `.local/`, `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1 está configurado con el binding `DB` y bases separadas para producción y pruebas. Validar migraciones localmente y en pruebas antes de aplicarlas a producción; `deploy` no las aplica automáticamente. Las pruebas de Vitest usan otra base temporal y no requieren acceso a tus bases remotas. R2 y los servicios del juego siguen pendientes.
 
 Referencia: [React y Vite en Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/react/).
 

@@ -1,6 +1,6 @@
 # Modelo de datos y migraciones D1
 
-La issue #2 establece el esquema de almacenamiento. Los endpoints de registro, premios, perfiles e intercambios siguen pendientes en sus respectivas issues. Las reglas funcionales están en el [README](../README.md) y el diseño general en [ARQUITECTURA.md](../ARQUITECTURA.md).
+La issue #2 establece el esquema de almacenamiento. Registro, autenticación y lectura de perfiles privados se implementan en #4/#5. Premios, edición de perfiles e intercambios continúan en sus respectivas issues. Las reglas funcionales están en el [README](../README.md) y el diseño general en [ARQUITECTURA.md](../ARQUITECTURA.md).
 
 ## Fuentes del esquema
 

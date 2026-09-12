@@ -15,5 +15,10 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["vite/client", "node", "@cloudflare/vitest-plugin/types"]
   },
-  "include": ["src", "*.config.ts", "worker-configuration.d.ts"]
+  "include": [
+    "src",
+    "*.config.ts",
+    "worker-configuration.d.ts",
+    "scripts/**/*.ts"
+  ]
 }

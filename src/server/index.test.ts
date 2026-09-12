@@ -25,7 +25,10 @@ describe('API foundation', () => {
   );
 
   it('does not treat an unsupported POST as a successful health check', async () => {
-    const response = await app.request('/api/health', { method: 'POST' });
+    const response = await app.request('/api/health', {
+      method: 'POST',
+      headers: { Origin: 'http://localhost' },
+    });
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ error: 'Ruta no encontrada.' });
   });
