@@ -1,4 +1,5 @@
 import mediaRoutes from './media/routes';
+import dropRoutes from './drops/routes';
 import { getCollection } from './collection/service';
 import { reconcileMedia } from './media/cleanup';
 import { Hono } from 'hono';
@@ -32,6 +33,7 @@ app.get('/api/health', (context) => {
 app.use('/api/*', sameOriginMutation);
 app.route('/api/auth', authRoutes);
 app.route('/api', mediaRoutes);
+app.route('/api', dropRoutes);
 app.route('/api/me', profileRoutes);
 app.use('/api/me/*', requireSession);
 app.use('/api/admin/*', requireSession, requireTeacher);

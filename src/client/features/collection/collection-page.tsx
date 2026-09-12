@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import catalog from '../../../shared/catalog/species.json';
 import { PageHeading } from '../../components/page-heading';
 import { PageState } from '../../components/page-state';
@@ -218,6 +219,9 @@ export function CollectionPage() {
           )}
         </>
       )}
+      <Button asChild variant="outline" className="self-start">
+        <Link to="/pokedrops">Canjear un PokéDrop</Link>
+      </Button>
       <InitialPage />
     </div>
   );

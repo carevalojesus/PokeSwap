@@ -6,6 +6,8 @@ import {
 } from '../features/auth/session-boundary';
 import { AuthPage } from '../features/auth/auth-page';
 import { AccountPage } from '../features/auth/account-page';
+import { TeacherDropsPage } from '../features/drops/teacher-drops-page';
+import { StudentDropsPage } from '../features/drops/student-drops-page';
 import { CollectionPage } from '../features/collection/collection-page';
 import { AppLayout } from './layout';
 import { HomePage } from '../features/home/home-page';
@@ -53,6 +55,7 @@ export function App() {
             </Route>
             <Route element={<RequireSession role="student" />}>
               <Route path="coleccion" element={<CollectionPage />} />
+              <Route path="pokedrops" element={<StudentDropsPage />} />
             </Route>
             <Route element={<RequireSession role="teacher" />}>
               <Route path="docente">
@@ -76,16 +79,7 @@ export function App() {
                     />
                   }
                 />
-                <Route
-                  path="pokedrops"
-                  element={
-                    <PendingPage
-                      teacher
-                      title="PokéDrops"
-                      description="Comparte nuevas oportunidades de descubrir Pokémon con tu clase."
-                    />
-                  }
-                />
+                <Route path="pokedrops" element={<TeacherDropsPage />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFoundPage />} />

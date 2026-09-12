@@ -18,7 +18,7 @@ La colección ofrece búsqueda por nombre/número, filtros de obtenidas, repetid
 
 TanStack Query utiliza la clave `['private', 'collection', userId]`, sin almacenamiento persistente y con descarte al desmontar. Se consulta al montar/volver, recuperar conexión o visibilidad, mediante el botón de actualización y al vencer la próxima reserva. No hay sondeo continuo. Ante error se ocultan los conteos anteriores; durante una comprobación se identifican como pendientes de actualización. Un 401 o identidad distinta retira la sesión de la interfaz; cancelar/cerrar sesión impide que respuestas antiguas restauren la colección.
 
-`refreshCollection(queryClient)` invalida las lecturas locales y envía `collection-changed` por BroadcastChannel, sin datos privados. Los futuros servicios de canje/intercambio deben llamarlo después de confirmar una operación en el servidor. La otra pestaña invalida su lectura. No hay todavía mutaciones de juego en esta entrega.
+`refreshCollection(queryClient)` invalida las lecturas locales y envía `collection-changed` por BroadcastChannel, sin datos privados. Los futuros servicios de canje/intercambio deben llamarlo después de confirmar una operación en el servidor. La otra pestaña invalida su lectura. Los canjes de #11 ya usan esta invalidación; los intercambios la integrarán en #15.
 
 El contrato Zod compartido rechaza especies duplicadas, progreso o denominador inválidos y cantidades inconsistentes. El backend entrega el cálculo confirmado; la interfaz obtiene nombres e imágenes del catálogo local.
 
@@ -29,4 +29,4 @@ El contrato Zod compartido rechaza especies duplicadas, progreso o denominador i
 - La comprobación móvil usa Chromium y WebKit con vistas emuladas; no sustituye la prueba en teléfonos físicos de #20.
 - HTTPS real contra D1 de pruebas: registro ficticio, inicial y conteos persistidos, dos sesiones independientes móvil/escritorio, recarga y denegación anónima. Reproducible con `npm run smoke:collection:ui -- https://pokeswap-collection-ui-XXXXXXXX.christian-ar-valo-jes-s.workers.dev chromium` (o `webkit`); el script rechaza producción y requiere un Worker temporal conectado exclusivamente a recursos de pruebas.
 
-La entrega no crea PokéDrops ni implementa transferencias, ranking o su autorización. Esas tareas siguen sus dependencias en Projects.
+Esta entrega no implementa transferencias, ranking o su autorización. Los PokéDrops se incorporaron en #11. Esas tareas siguen sus dependencias en Projects.

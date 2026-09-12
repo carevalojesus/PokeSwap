@@ -5,6 +5,7 @@ import { authenticate, SESSION_COOKIE, type Identity } from './session';
 export type AuthEnv = {
   Bindings: {
     DB: D1Database;
+    DROPS_TOKEN_SECRET?: string;
     AVATARS: R2Bucket;
     AUTH_IP_LIMITER: RateLimit;
     AUTH_ACCOUNT_LIMITER: RateLimit;
