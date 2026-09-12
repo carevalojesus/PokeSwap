@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; su integración con registro y PokéDrops sigue pendiente. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. Las sesiones, los endpoints de autenticación y la integración con PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -36,7 +36,7 @@ Cada alumno completa estos campos al registrarse:
 | ID de SENATI | Obligatorio y único. Identifica la cuenta y se utiliza para iniciar sesión. |
 | Nombres | Obligatorios; se admiten nombres compuestos, espacios y tildes. |
 | Apellidos | Obligatorios en un campo independiente; se admiten apellidos compuestos. |
-| Contraseña | Obligatoria; se guarda su hash con sal, nunca el texto original. |
+| Contraseña | Obligatoria, de 15 a 128 caracteres; se guarda su hash scrypt con sal, nunca el texto original. |
 | Fecha de nacimiento | Obligatoria, como fecha de calendario `YYYY-MM-DD`; permite mostrar la edad. |
 | Nombre de entrenador | Lo genera el servidor; el alumno no tiene que inventarlo ni escribirlo. |
 | Foto de perfil | Opcional; puede seleccionarse durante el registro o subirse y cambiarse después. |
@@ -45,7 +45,7 @@ El ID de SENATI se almacena como **texto**, conservando ceros iniciales. Se reco
 
 Nombres y apellidos se recortan, normalizan espacios y conservan su escritura y tildes; cada campo admite de 1 a 100 caracteres y no acepta solo espacios. Dos alumnos pueden tener el mismo nombre completo, pero no el mismo ID de SENATI.
 
-El registro guarda en una única operación de D1 la cuenta, el nombre de entrenador, el ejemplar inicial y su historial. La restricción única del ID evita cuentas y premios duplicados incluso ante solicitudes simultáneas. Un intento con un ID existente indica que debe iniciarse sesión; no reemplaza contraseña, datos ni colección. Recuperar el resultado de una cuenta existente requiere autenticarse.
+El servicio de registro está implementado en la tarea #4; su conexión HTTP y sesión se realizará en #5. Ver [registro atómico](docs/REGISTRO.md). El registro guarda en una única operación de D1 la cuenta, el nombre de entrenador, el ejemplar inicial y su historial. La restricción única del ID evita cuentas y premios duplicados incluso ante solicitudes simultáneas. Un intento con un ID existente indica que debe iniciarse sesión; no reemplaza contraseña, datos ni colección. Recuperar el resultado de una cuenta existente requiere autenticarse.
 
 Una vez confirmada la cuenta se establece la sesión. Si falla la entrega de la respuesta o la creación de la sesión, el alumno puede iniciar sesión con sus credenciales y recuperar el perfil y el mismo inicial ya guardados.
 
@@ -53,7 +53,7 @@ Una vez confirmada la cuenta se establece la sesión. Si falla la entrega de la 
 
 Debe sonar a personaje del universo de entrenadores Pokémon y mantenerse estable durante el juego. Ejemplos de formato: **Kairo del Trueno · 7K4P** y **Lumion de la Aurora · 9R2M**. Son ejemplos; no nombres asignados a cuentas reales.
 
-Algoritmo previsto, ejecutado en el servidor:
+Algoritmo implementado en el servidor, versión 1:
 
 1. Combinar dos o tres sílabas de listas curadas de inicios, enlaces y terminaciones pronunciables; por ejemplo, `Kai + ro` o `Lu + mi + on`.
 2. Añadir un epíteto de una lista revisada, como `del Trueno`, `de la Aurora`, `del Alba` o `de la Bruma`.

@@ -183,7 +183,7 @@ Las tareas de limpieza no sustituyen la validación del vencimiento en cada soli
 
 El ingreso usa ID SENATI y contraseña. La sesión se representa mediante un token aleatorio en cookie `HttpOnly`, `Secure` y `SameSite`, con hash, vencimiento y revocación en D1. Las mutaciones llevan protección CSRF y el servidor comprueba el rol y la propiedad del recurso en cada operación. La cuenta docente se provisiona fuera del registro público.
 
-El módulo concreto de autenticación y el algoritmo de hash de contraseñas se seleccionarán y verificarán por su compatibilidad con Workers y el acceso mediante ID SENATI. No se almacenarán contraseñas en claro ni tokens de sesión en `localStorage`.
+La tarea #4 implementa el registro atómico y selecciona scrypt nativo de `node:crypto` con `nodejs_compat` (N=16384, r=8, p=5), verificado en Workers local y remoto; ver [registro](docs/REGISTRO.md). El módulo de sesiones, los endpoints de autenticación y el acceso mediante ID SENATI se integrarán en #5. No se almacenarán contraseñas en claro ni tokens de sesión en `localStorage`.
 
 Los datos personales solo se exponen al propio alumno y al docente autorizado. Ranking e intercambios muestran alias y foto. Los errores y registros operativos deben permitir investigar fallos sin registrar contraseñas, tokens ni contenido privado innecesario.
 
@@ -230,7 +230,7 @@ El alcance completo es exigente para una jornada. La integridad del juego y la p
 ## Decisiones pendientes de implementación
 
 - Incorporar las dependencias de las funciones restantes. Las issues #1 y #2 fijan la base, Drizzle, el esquema D1 y los comandos de migración; ver [modelo de datos](docs/DATOS.md).
-- Elegir y verificar el módulo de autenticación y el hash de contraseñas en Workers.
+- Integrar el módulo de sesiones y endpoints de autenticación sobre el registro y el hash scrypt verificados en #4.
 - Implementar la aceptación completa de intercambios sobre el esquema de reservas y el patrón de aserciones D1 probado en #2. Las pruebas de almacenamiento no sustituyen la validación del servicio de #14.
 - Seleccionar y verificar la validación del contenido WebP en el Worker.
 - Medir capacidad para la clase y comprobar cámara, audio y PWA en los dispositivos previstos.
