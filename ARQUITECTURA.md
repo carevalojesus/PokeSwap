@@ -2,7 +2,7 @@
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
-**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las issues #3–#5 añaden catálogo, sorteo, registro y autenticación. Las pantallas, PokéDrops, intercambios y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
+**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las issues #3–#5 añaden catálogo, sorteo, registro y autenticación. La issue #6 incorpora navegación, componentes y Pokédex pública; las pantallas de acceso, PokéDrops, intercambios y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
 
 El [README](README.md) define las reglas del producto, perfiles, probabilidades y contratos previstos. Este documento establece cómo implementarlos y cómo añadir una experiencia visual y sonora coherente. Las bibliotecas de la base están fijadas en `package.json` y `package-lock.json`. Las restantes se incorporarán al implementar sus respectivas issues; figurar en esta arquitectura no implica estar instaladas.
 
@@ -42,6 +42,8 @@ Tailwind ofrece integración directa con Vite; Lucide expone componentes React; 
 React Router organiza las pantallas. TanStack Query administra los datos recuperados de la API; filtros, selecciones y modales usan estado local de React. No se añade otro gestor global de estado al inicio. La caché del navegador no sustituye a D1 como fuente de verdad. Al cerrar sesión se descartan los datos privados en memoria para que otra cuenta no vea la colección anterior. [React Router](https://reactrouter.com/start/declarative/routing), [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
 
 Zod permitirá compartir esquemas de formato entre cliente y servidor. El servidor siempre vuelve a validar datos, sesión, permisos y reglas del juego; la validación del formulario solo mejora la experiencia. [Zod y su integración con formularios](https://zod.dev/)
+
+La tarea #6 incorpora React Router, navegación móvil/lateral, rutas de alumno/docente y componentes shadcn/Radix adaptados. El catálogo público ya permite buscar y consultar fichas. La conexión de sesión y formularios continúa en #7; ver [interfaz implementada y límites](docs/INTERFAZ.md).
 
 ### Dirección visual
 

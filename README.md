@@ -4,13 +4,19 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. Las sesiones, registro/login/logout y permisos ya están implementados en la API; las pantallas de acceso y la integración con PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. Las sesiones, registro/login/logout y permisos ya están implementados en la API; las pantallas de acceso y la integración con PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
 Repositorio: [carevalojesus/PokeSwap](https://github.com/carevalojesus/PokeSwap).
 
 **Organización:** [tablero de GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2) · [issues](https://github.com/carevalojesus/PokeSwap/issues) · [flujo de trabajo](TRABAJO.md). La implementación se organiza por issues con dependencias, prioridades, fases y criterios de aceptación.
+
+## Interfaz disponible
+
+Explora el [catálogo público](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/pokedex), busca especies por nombre o número y consulta las reglas. La navegación de alumno y docente ya tiene rutas propias; colección, perfil, ranking y gestión docente muestran su disponibilidad hasta conectar sus funciones. Las pantallas de registro/login se implementan en #7.
+
+Ver [componentes, rutas y pruebas de navegador](docs/INTERFAZ.md). Tras `npm run build`, ejecuta `npx playwright install chromium webkit` y `npm run test:ui` para comprobar la interfaz.
 
 ## Reglas del juego
 
@@ -293,6 +299,7 @@ Vite inicia la aplicación y el Worker local en `http://127.0.0.1:5173` si el pu
 | `npm run lint` | Revisar código con ESLint. |
 | `npm run format` | Formatear código y configuración con Prettier. |
 | `npm run format:check` | Comprobar formato de código y configuración. |
+| `npm run test:ui` | Recorridos de navegador sobre el build previo; requiere `npx playwright install chromium webkit`. |
 | `npm test` | Ejecutar pruebas de la API dentro del runtime Workers con Vitest. |
 | `npm run build` | Comprobar tipos y compilar cliente y Worker en `dist/`. |
 | `npm run check` | Ejecutar formato, lint, historial de migraciones, pruebas y build; también se ejecuta en GitHub Actions. |
@@ -315,13 +322,13 @@ Vite inicia la aplicación y el Worker local en `http://127.0.0.1:5173` si el pu
 
 `GET /api/health` devuelve `200` con `{"status":"ok","service":"pokeswap-classroom"}` y `Cache-Control: no-store`. Solo indica que el Worker responde; no verifica base de datos, almacenamiento ni disponibilidad del juego.
 
-Las rutas `/api` y `/api/*` pasan primero por Hono. Las rutas de API inexistentes devuelven `404` JSON después de los controles de acceso aplicables, incluso al abrirlas directamente en el navegador. El resto usa los archivos estáticos y fallback SPA. Por ahora las rutas de cliente muestran la pantalla inicial; aún no existe una pantalla funcional de colección ni autenticación.
+Las rutas `/api` y `/api/*` pasan primero por Hono. Las rutas de API inexistentes devuelven `404` JSON después de los controles de acceso aplicables, incluso al abrirlas directamente en el navegador. El resto usa los archivos estáticos y fallback SPA. React Router resuelve las rutas de cliente: inicio y catálogo son funcionales; las secciones de alumno/docente muestran mensajes de disponibilidad. Las rutas desconocidas muestran una página 404. La colección autenticada y los formularios de acceso siguen pendientes.
 
-Las pruebas de humo verifican `/`, una ruta de cliente, `/api/health` y rutas de API inexistentes, tanto con peticiones normales como de navegación. El diseño completo y las funcionalidades siguen su orden de issues.
+Las pruebas de humo verifican inicio, colección, Pokédex, ruta docente, fallback SPA, `/api/health`, API inexistente e imágenes del catálogo. Playwright comprueba las interacciones en Chromium y WebKit; las funcionalidades restantes siguen su orden de issues.
 
 ### Despliegue y credenciales
 
-**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Es una pantalla inicial; el juego aún no está habilitado.
+**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable y Pokédex pública; el juego y las pantallas de acceso aún no están habilitados.
 
 La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classroom`. Vite genera la configuración final del despliegue junto al build. Los scripts usan Wrangler instalado en el proyecto, sin depender de la versión global.
 

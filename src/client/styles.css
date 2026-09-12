@@ -9,9 +9,17 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
   }
   body {
-    @apply m-0 min-w-80 bg-white font-sans text-zinc-950 antialiased;
+    @apply m-0 bg-white font-sans text-zinc-950 antialiased;
   }
   a:focus-visible {
     @apply rounded-sm outline-2 outline-offset-4 outline-rose-700;
+  }
+  button,
+  a,
+  input {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :target {
+    scroll-margin-top: 1rem;
   }
 }

@@ -28,20 +28,28 @@
     "catalog:import": "node scripts/import-catalog.mjs",
     "catalog:check": "node scripts/check-catalog.mjs",
     "teacher:create": "tsx scripts/provision-teacher.ts",
-    "smoke:auth": "node scripts/smoke-auth.mjs"
+    "smoke:auth": "node scripts/smoke-auth.mjs",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",
+    "@radix-ui/react-dialog": "1.1.23",
+    "@radix-ui/react-slot": "1.3.3",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
     "drizzle-orm": "0.45.2",
     "hono": "4.13.7",
     "lucide-react": "1.45.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-router": "8.3.1",
+    "tailwind-merge": "3.6.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.54.8",
     "@cloudflare/vitest-plugin": "1.1.8",
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "22.20.2",
     "@types/react": "19.3.0",
