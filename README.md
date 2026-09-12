@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; su integración con registro y PokéDrops sigue pendiente. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -109,7 +109,7 @@ D1 y R2 no se tratan como una sola transacción. Cada carga tiene un registro pe
 
 La probabilidad individual de cada especie #001–#149 es `99,8 % / 149`, aproximadamente `0,66980 %`. La distribución total suma 100 %: 0,1 % para Mewtwo, 0,1 % para Mew y 99,8 % para las demás especies. La dificultad especial de Mew y Mewtwo es una regla de este juego, no un valor tomado de PokéAPI. Las demás especies no tienen diferencias de rareza en este MVP.
 
-Algoritmo del servidor: obtener un entero uniforme de 0 a 999 con aleatoriedad segura; si sale 0, entregar Mewtwo; si sale 1, entregar Mew. En los otros 998 casos, sortear uniformemente un ID entre 1 y 149. La selección de enteros evita sesgo por aplicar módulo directamente a bytes aleatorios.
+Algoritmo implementado en `src/server/game/draw.ts` (balance versión 1; ver [catálogo y sorteos](docs/CATALOGO.md)): obtener un entero uniforme de 0 a 999 con aleatoriedad segura; si sale 0, entregar Mewtwo; si sale 1, entregar Mew. En los otros 998 casos, sortear uniformemente un ID entre 1 y 149. La selección de enteros evita sesgo por aplicar módulo directamente a bytes aleatorios.
 
 Se utiliza la misma función y configuración para el inicial y cada premio del docente. Cada sorteo es independiente, con reemplazo: poseer Mew o Mewtwo no aumenta ni reduce las probabilidades y ambos pueden salir repetidos. El primer ejemplar de cada especie queda protegido; los adicionales pueden intercambiarse bajo las reglas normales. Obtener Mew no requiere completar previamente los 150 ni participar en un evento especial.
 
@@ -296,6 +296,8 @@ Vite inicia la aplicación y el Worker local en `http://127.0.0.1:5173` si el pu
 | `npm run preview` | Servir localmente el build de producción después de `npm run build`. |
 | `npm run smoke -- http://127.0.0.1:5173` | Comprobar SPA, fallback y API contra el servidor iniciado. Acepta también una URL HTTPS. |
 | `npm run cf:types` | Generar tipos locales de Wrangler tras cambios de bindings; typecheck y build lo ejecutan automáticamente. |
+| `npm run catalog:import` | Importar las revisiones fijadas de PokéAPI; uso de mantenimiento con red. |
+| `npm run catalog:check` | Validar catálogo e imágenes locales sin red; incluido en CI. |
 | `npm run db:generate` | Generar una nueva migración SQL desde el esquema Drizzle. |
 | `npm run db:check` | Comprobar el historial de migraciones de Drizzle. |
 | `npm run db:migrate:local` | Aplicar migraciones a D1 local. |

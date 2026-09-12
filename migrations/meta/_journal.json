@@ -15,6 +15,13 @@
       "when": 1789173202582,
       "tag": "0001_integrity_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789174715347,
+      "tag": "0002_kanto_catalog",
+      "breakpoints": true
     }
   ]
 }

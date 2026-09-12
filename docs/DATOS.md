@@ -18,7 +18,7 @@ Drizzle genera el SQL; **Wrangler aplica las migraciones** y registra las ya apl
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `users`              | ID SENATI como texto único; nombres y nacimiento; alias y clave normalizada única; versión del generador; hash de contraseña; rol; referencia de avatar y versión de perfil.      |
 | `sessions`           | Hash hexadecimal SHA-256 de token, propietario, creación, expiración y revocación. No almacena el token original.                                                                 |
-| `pokemon_species`    | IDs #001–#151, nombre e imagen. La carga del catálogo pertenece a #3; esta migración no inserta especies.                                                                         |
+| `pokemon_species`    | IDs #001–#151, nombre e imagen. La migración `0002_kanto_catalog.sql` de #3 inserta las 151 especies.                                                                             |
 | `poke_drops`         | Docente creador, hash de token, expiración, cancelación y versión. El canje siempre entrega tres ejemplares según las reglas.                                                     |
 | `reward_grants`      | Operación de premio inicial o canje de PokéDrop, beneficiario, cantidad de sorteos y versión de probabilidades. Un inicial por usuario y un canje por usuario/PokéDrop.           |
 | `pokemon_instances`  | Ejemplar individual, especie, propietario actual, premio y posición de origen, protección, versión y fechas. No se agrega unicidad por propietario/especie que impida duplicados. |
@@ -104,7 +104,7 @@ Las pruebas de #2 demuestran el mecanismo de reversión y la competencia entre d
 | Pruebas remoto | `DB` en `env.test`, `pokeswap-classroom-test`                  | Verificar migraciones en Cloudflare antes de producción.                              |
 | Producción     | `DB`, `pokeswap-classroom-db`                                  | Base vinculada al Worker publicado.                                                   |
 
-Las bases remotas tienen IDs distintos en `wrangler.jsonc`; esos identificadores no son credenciales. R2 no se provisiona en esta issue. No hay datos de alumnos ni catálogo en las migraciones; los fixtures solo se insertan en la base temporal de Vitest.
+Las bases remotas tienen IDs distintos en `wrangler.jsonc`; esos identificadores no son credenciales. R2 no se provisiona en esta issue. Las migraciones no incluyen datos de alumnos. La migración 0002 carga el catálogo público; los fixtures de cuentas y operaciones solo se insertan en la base temporal de Vitest.
 
 ```sh
 npm run db:generate
