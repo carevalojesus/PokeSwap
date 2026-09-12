@@ -6,7 +6,7 @@ La tarea #7 conecta los formularios React con la API Hono/D1 de #5. Las consulta
 
 - `/registro`: cuenta de alumno con ID SENATI, nombres, apellidos, nacimiento y contraseña. No envía rol, alias ni especie elegida por el cliente.
 - `/ingresar`: acceso común de alumno y docente con ID y contraseña. El rol confirmado determina el destino: `/coleccion` o `/docente`.
-- `/perfil`: consulta de los datos propios devueltos por la API, incluida la edad calculada en Lima. La edición y foto siguen en #8/#9.
+- `/perfil`: consulta de los datos propios devueltos por la API, incluida la edad calculada en Lima. La edición con control de versión está implementada en #8; ver [perfil editable](PERFIL.md). La foto sigue en #9.
 - `/coleccion`: muestra exclusivamente la entrega inicial persistida del alumno. No calcula ni inventa progreso, duplicados o colección completa; esa función sigue en #10.
 - `/docente/*`: exige rol docente antes de mostrar la estructura de #6. El panel completo y listado de alumnos siguen en #16.
 - Ranking e intercambios requieren sesión y mantienen el mensaje de disponibilidad hasta implementar sus servicios.
@@ -25,7 +25,7 @@ La respuesta se valida antes de guardarse en la caché. Se rechazan cuerpos inco
 
 El token permanece en la cookie HttpOnly. Las solicitudes usan rutas del mismo origen, `credentials: same-origin`, `cache: no-store`, JSON y un plazo de 15 segundos. No se guardan tokens, contraseñas ni perfiles en localStorage/sessionStorage.
 
-TanStack Query mantiene la consulta `['private', 'session']` solo en memoria. La obsolescencia es de 30 segundos, se consulta al montar, volver a la pestaña o reconectar, y un temporizador vuelve a comprobar el vencimiento absoluto. No hay sondeo periódico de autenticación. Durante una comprobación pendiente o fallida se ocultan los datos privados; el usuario puede reintentar.
+TanStack Query mantiene la consulta `['private', 'session']` solo en memoria. La obsolescencia es de 30 segundos, se consulta al montar, volver a la pestaña o reconectar, y un temporizador vuelve a comprobar el vencimiento absoluto y el cambio de día en Lima. No hay sondeo periódico de autenticación. Durante una comprobación pendiente o fallida se ocultan los datos privados; el usuario puede reintentar.
 
 Las escrituras de registro/login/logout se ejecutan una vez por envío y no se reintentan automáticamente. Las credenciales no se introducen en la caché de mutaciones. Un bloqueo en memoria evita solicitudes simultáneas de autenticación desde la misma instancia de la aplicación.
 
@@ -60,6 +60,6 @@ Las pruebas de Workers cubren validación compartida, registro, sesiones y permi
 
 El script `smoke:auth:ui` utiliza una cuenta docente ya provisionada y verifica formulario real, cookie, rol, perfil, cierre y rutas protegidas. No crea cuentas ni genera capturas/trazas; sanitiza fallos para no mostrar datos privados. Las pruebas completas de registro real se ejecutan en un Worker temporal HTTPS ligado únicamente a D1 de pruebas, con datos ficticios, y el Worker se elimina después. La cuenta docente real se comprueba en producción tras integrar y desplegar.
 
-La revisión visual comprende móvil y escritorio. La emulación no sustituye las pruebas de teléfonos físicos y capacidad de la clase de #20. La recuperación automática de contraseña, edición de perfil, fotos y servicios del juego permanecen en sus respectivos alcances.
+La revisión visual comprende móvil y escritorio. La emulación no sustituye las pruebas de teléfonos físicos y capacidad de la clase de #20. La recuperación automática de contraseña, fotos y servicios del juego permanecen en sus respectivos alcances.
 
 Referencias: [React Hook Form](https://github.com/react-hook-form/react-hook-form), [resolver Zod](https://github.com/react-hook-form/resolvers), [esquemas Zod](https://zod.dev/api) y [cancelación de consultas TanStack](https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation).

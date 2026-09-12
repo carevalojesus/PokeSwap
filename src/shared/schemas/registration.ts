@@ -95,6 +95,27 @@ export function parseRegistration(
   }
   const input = body as unknown as RegistrationInput;
   const senatiId = normalizeSenatiId(input.senatiId);
+  const { firstNames, lastNames, birthDate } = parsePersonalDetails(input, now);
+  // Do not trim, truncate or normalize passwords: verification uses identical bytes.
+  const password = input.password;
+  if (
+    length(password) < 15 ||
+    length(password) > 128 ||
+    /[\p{Cc}\p{Cs}]/u.test(password) ||
+    new TextEncoder().encode(password).length > 1024
+  ) {
+    throw new InvalidRegistration(
+      'password',
+      'Usa una contraseña de 15 a 128 caracteres, sin caracteres de control.',
+    );
+  }
+  return { senatiId, firstNames, lastNames, birthDate, password };
+}
+
+export function parsePersonalDetails(
+  input: Pick<RegistrationInput, 'firstNames' | 'lastNames' | 'birthDate'>,
+  now = new Date(),
+) {
   const normalizeName = (field: 'firstNames' | 'lastNames') => {
     if (forbidden.test(input[field]))
       throw new InvalidRegistration(
@@ -131,18 +152,5 @@ export function parseRegistration(
       'La fecha debe existir y no estar en el futuro.',
     );
   }
-  // Do not trim, truncate or normalize passwords: verification uses identical bytes.
-  const password = input.password;
-  if (
-    length(password) < 15 ||
-    length(password) > 128 ||
-    /[\p{Cc}\p{Cs}]/u.test(password) ||
-    new TextEncoder().encode(password).length > 1024
-  ) {
-    throw new InvalidRegistration(
-      'password',
-      'Usa una contraseña de 15 a 128 caracteres, sin caracteres de control.',
-    );
-  }
-  return { senatiId, firstNames, lastNames, birthDate, password };
+  return { firstNames, lastNames, birthDate };
 }

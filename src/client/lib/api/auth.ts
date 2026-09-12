@@ -1,3 +1,4 @@
+import type { ProfileUpdate } from '../../../shared/schemas/profile';
 import { authenticatedProfileSchema } from '../../../shared/schemas/auth';
 import type { AuthenticatedProfile } from '../../../shared/contracts/auth';
 import type { LoginInput } from '../../../shared/schemas/auth';
@@ -116,4 +117,14 @@ export function authErrorMessage(error: unknown, register = false): string {
         ? 'No pudimos confirmar el registro. La cuenta podría haberse creado: inicia sesión con el mismo ID y contraseña antes de volver a registrarte.'
         : 'No pudimos confirmar el acceso. Revisa tu conexión y vuelve a intentarlo.';
   }
+}
+
+export async function patchProfile(input: ProfileUpdate, signal: AbortSignal) {
+  return profile(
+    await request('/api/me/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+      signal,
+    }),
+  );
 }

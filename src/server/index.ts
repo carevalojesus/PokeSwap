@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import profileRoutes from './auth/profile-routes';
 import authRoutes from './auth/routes';
 import {
   type AuthEnv,
@@ -27,6 +28,7 @@ app.get('/api/health', (context) => {
 
 app.use('/api/*', sameOriginMutation);
 app.route('/api/auth', authRoutes);
+app.route('/api/me', profileRoutes);
 app.use('/api/me/*', requireSession);
 app.use('/api/admin/*', requireSession, requireTeacher);
 app.get('/api/me', async (c) => {

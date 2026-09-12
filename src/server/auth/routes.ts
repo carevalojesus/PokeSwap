@@ -1,3 +1,4 @@
+import { readJson } from './read-json';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { loginSchema, registrationSchema } from '../../shared/schemas/auth';
@@ -25,40 +26,6 @@ const DUMMY_HASH =
   'scrypt$v1$16384$8$5$000102030405060708090a0b0c0d0e0f$e0a9928cac27a6d7a08072d01b972d5c733717c6ac373b7f5870a9272f0dc4b0';
 const now = () => Math.floor(Date.now() / 1000);
 const app = new Hono<AuthEnv>();
-
-// Count actual streamed bytes even when Content-Length is absent or misleading.
-async function readJson(request: Request): Promise<unknown> {
-  const reader = request.body?.getReader();
-  if (!reader)
-    throw new InvalidRegistration('body', 'Se requiere un cuerpo JSON.');
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      size += value.byteLength;
-      if (size > 8192) {
-        await reader.cancel();
-        throw new RangeError('body_limit');
-      }
-      chunks.push(value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  const bytes = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.length;
-  }
-  try {
-    return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
-  } catch {
-    throw new InvalidRegistration('body', 'El cuerpo JSON no es válido.');
-  }
-}
 
 app.use('*', async (c, next) => {
   if (c.req.method !== 'POST') return next();

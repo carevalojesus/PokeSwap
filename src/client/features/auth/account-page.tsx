@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+import { ProfileEditor } from './profile-editor';
 import { Link } from 'react-router';
 import catalog from '../../../shared/catalog/species.json';
 import { useSession } from './session-context';
@@ -9,6 +11,13 @@ import { speciesName } from '../pokedex/species-name';
 
 export function AccountPage() {
   const { profile } = useSession();
+  const [editing, setEditing] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const confirmation = useRef<HTMLParagraphElement>(null);
+  const editButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (saved) confirmation.current?.focus();
+  }, [saved]);
   if (!profile) return null;
   const { user } = profile;
   const date = user.birthDate.split('-').reverse().join('/');
@@ -26,8 +35,18 @@ export function AccountPage() {
       <PageHeading
         eyebrow="Tu cuenta"
         title="Mi perfil"
-        description="Estos son los datos guardados en tu cuenta. La edición y la foto estarán disponibles próximamente."
+        description="Consulta y corrige tus datos personales. La edad se calcula con la fecha actual de Lima."
       />
+      {saved && (
+        <p
+          ref={confirmation}
+          role="status"
+          tabIndex={-1}
+          className="text-base text-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose-700"
+        >
+          Cambios guardados. Tu perfil está actualizado.
+        </p>
+      )}
       <dl className="grid gap-6 border-y border-zinc-950/10 py-6 sm:grid-cols-2">
         {fields.map(([label, value]) => (
           <div key={label} className="flex min-w-0 flex-col gap-2">
@@ -38,6 +57,28 @@ export function AccountPage() {
           </div>
         ))}
       </dl>
+      {editing ? (
+        <ProfileEditor
+          user={user}
+          onClose={(didSave) => {
+            setEditing(false);
+            setSaved(didSave);
+            if (!didSave)
+              requestAnimationFrame(() => editButton.current?.focus());
+          }}
+        />
+      ) : (
+        <Button
+          ref={editButton}
+          className="self-start"
+          onClick={() => {
+            setSaved(false);
+            setEditing(true);
+          }}
+        >
+          Editar perfil
+        </Button>
+      )}
       <p className="text-base text-zinc-600">
         Tus compañeros ven tu nombre de entrenador; tus datos personales son
         privados.
