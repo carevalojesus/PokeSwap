@@ -12,7 +12,13 @@ async function request(path, init) {
   });
 }
 
-for (const path of ['/', '/coleccion']) {
+for (const path of [
+  '/',
+  '/coleccion',
+  '/pokedex',
+  '/docente/alumnos',
+  '/no-existe',
+]) {
   const response = await request(path, {
     headers: { 'Sec-Fetch-Mode': 'navigate', Accept: 'text/html' },
   });
