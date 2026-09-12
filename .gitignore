@@ -1,1 +1,12 @@
 .DS_Store
+node_modules/
+dist/
+.wrangler/
+.dev.vars*
+.env*
+!.env.example
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+worker-configuration.d.ts

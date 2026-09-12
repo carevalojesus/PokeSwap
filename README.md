@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** documentación del MVP y arquitectura definidas. El código, la configuración de infraestructura y el despliegue están pendientes. La jornada de desarrollo prevista es el 11 de septiembre de 2026.
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. Las funciones del juego, D1, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -266,6 +266,57 @@ Las pruebas de repetidos usan datos controlados para verificar reglas sin depend
 
 ## Documentación y ejecución
 
-Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Ambos documentos describen trabajo previsto; no acreditan funciones implementadas.
+Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Las reglas del juego siguen siendo especificaciones pendientes; la base implementada y sus comandos se detallan a continuación.
 
-Todavía no existen comandos de instalación, desarrollo, migración ni despliegue disponibles en este repositorio local. Se documentarán aquí cuando estén implementados y verificados. No se deben incluir credenciales ni secretos en Git.
+### Requisitos e instalación
+
+Usar **Node.js 24** (definido en `.nvmrc`) y npm. Las versiones directas están fijadas en `package.json` y las dependencias completas en `package-lock.json`.
+
+```sh
+nvm use
+npm ci
+npm run dev
+```
+
+Vite inicia la aplicación y el Worker local en `http://127.0.0.1:5173` si el puerto está disponible. No hace falta iniciar un backend separado. El desarrollo y las pruebas usan el runtime local de Workers; no requieren credenciales de producción.
+
+### Comandos disponibles
+
+| Comando | Función |
+|---|---|
+| `npm run dev` | Desarrollo de React y Worker con recarga local. |
+| `npm run typecheck` | Comprobar TypeScript. |
+| `npm run lint` | Revisar código con ESLint. |
+| `npm run format` | Formatear código y configuración con Prettier. |
+| `npm run format:check` | Comprobar formato de código y configuración. |
+| `npm test` | Ejecutar pruebas de la API dentro del runtime Workers con Vitest. |
+| `npm run build` | Comprobar tipos y compilar cliente y Worker en `dist/`. |
+| `npm run check` | Ejecutar formato, lint, pruebas y build; también se ejecuta en GitHub Actions. |
+| `npm run preview` | Servir localmente el build de producción después de `npm run build`. |
+| `npm run smoke -- http://127.0.0.1:5173` | Comprobar SPA, fallback y API contra el servidor iniciado. Acepta también una URL HTTPS. |
+| `npm run cf:types` | Generar tipos locales de Wrangler tras cambios de bindings. |
+| `npm run deploy` | Compilar y publicar con el Wrangler local del proyecto. |
+
+### API y alcance de la base
+
+`GET /api/health` devuelve `200` con `{"status":"ok","service":"pokeswap-classroom"}` y `Cache-Control: no-store`. Solo indica que el Worker responde; no verifica base de datos, almacenamiento ni disponibilidad del juego.
+
+Las rutas `/api` y `/api/*` pasan primero por Hono. Las rutas de API inexistentes devuelven `404` JSON, incluso al abrirlas directamente en el navegador. El resto usa los archivos estáticos y fallback SPA. Por ahora las rutas de cliente muestran la pantalla inicial; aún no existe una pantalla funcional de colección ni autenticación.
+
+Las pruebas de humo verifican `/`, una ruta de cliente, `/api/health` y rutas de API inexistentes, tanto con peticiones normales como de navegación. El diseño completo y las funcionalidades siguen su orden de issues.
+
+### Despliegue y credenciales
+
+**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Es una pantalla inicial; el juego aún no está habilitado.
+
+La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classroom`. Vite genera la configuración final del despliegue junto al build. Los scripts usan Wrangler instalado en el proyecto, sin depender de la versión global.
+
+Para publicar desde otra máquina, iniciar sesión con `npx wrangler login`, verificar la cuenta con `npx wrangler whoami` y ejecutar `npm run deploy`. La integración continua valida las PR; todavía no publica automáticamente ni requiere secretos de Cloudflare en GitHub.
+
+No se incluyen credenciales ni secretos en Git. `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1, R2 y los comandos de migración se incorporarán en sus issues; no se simulan ni se anuncian como disponibles.
+
+Referencia: [React y Vite en Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/react/).
+
+### Nota sobre herramientas locales
+
+En esta máquina, la precarga de Console Lens mediante `NODE_OPTIONS` truncó el HTML servido por `preview`. La comprobación pasó al iniciar temporalmente con `env -u NODE_OPTIONS npm run preview`; no se modificó la configuración global. Este diagnóstico es específico de esa precarga local y no afecta al despliegue HTTPS.

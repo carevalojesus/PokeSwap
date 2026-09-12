@@ -1,0 +1,10 @@
+node_modules
+dist
+.wrangler
+coverage
+package-lock.json
+worker-configuration.d.ts
+README.md
+ARQUITECTURA.md
+TRABAJO.md
+AGENTS.md
