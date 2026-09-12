@@ -128,3 +128,22 @@ export async function patchProfile(input: ProfileUpdate, signal: AbortSignal) {
     }),
   );
 }
+
+export type AvatarMutation =
+  | { kind: 'put'; blob: Blob; key: string; version: number }
+  | { kind: 'delete'; version: number };
+export async function mutateAvatar(input: AvatarMutation, signal: AbortSignal) {
+  return profile(
+    await request('/api/me/avatar', {
+      method: input.kind === 'put' ? 'PUT' : 'DELETE',
+      signal,
+      headers: {
+        'X-Profile-Version': String(input.version),
+        ...(input.kind === 'put'
+          ? { 'Content-Type': 'image/webp', 'Idempotency-Key': input.key }
+          : {}),
+      },
+      body: input.kind === 'put' ? await input.blob.arrayBuffer() : undefined,
+    }),
+  );
+}

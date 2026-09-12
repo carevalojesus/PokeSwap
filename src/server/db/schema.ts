@@ -460,3 +460,8 @@ export const transactionGuards = sqliteTable(
   },
   (t) => [check('transaction_guards_ok', sql`${t.ok} = 1`)],
 );
+
+export const mediaSweepState = sqliteTable('media_sweep_state', {
+  id: text('id').primaryKey(),
+  cursor: text('cursor'),
+});

@@ -1,6 +1,6 @@
 # Perfil editable y edad
 
-La tarea #8 conecta la edición de nombres, apellidos y fecha de nacimiento en `/perfil`. Está disponible para la cuenta autenticada, sea alumno o docente. El ID SENATI, alias, rol, foto y credenciales no forman parte del contrato de edición. La foto corresponde a #9; la administración de alumnos a #16.
+La tarea #8 conecta la edición de nombres, apellidos y fecha de nacimiento en `/perfil`. Está disponible para la cuenta autenticada, sea alumno o docente. El ID SENATI, alias, rol, foto y credenciales no forman parte del contrato de edición. La foto está implementada en [#9](FOTOS.md); la administración de alumnos a #16.
 
 ## Contrato y persistencia
 

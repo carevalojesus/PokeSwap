@@ -14,6 +14,8 @@ import {
   getSession,
   revokeSession,
   patchProfile,
+  mutateAvatar,
+  type AvatarMutation,
 } from '../../lib/api/auth';
 import { SessionContext, type SessionAction } from './session-context';
 import type { LoginInput } from '../../../shared/schemas/auth';
@@ -134,16 +136,18 @@ function SessionProvider({ children }: { children: ReactNode }) {
       locked.current = false;
     }
   }
-  async function updateProfile(input?: ProfileUpdate) {
+  async function updateProfile(input?: ProfileUpdate, avatar?: AvatarMutation) {
     const userId = query.data?.user.id;
     const started = generation.current;
     if (!userId || locked.current) throw new ApiError('UNAUTHENTICATED');
     const controller = new AbortController();
     profileRequests.current.add(controller);
     try {
-      const result = input
-        ? await patchProfile(input, controller.signal)
-        : await getSession(controller.signal);
+      const result = avatar
+        ? await mutateAvatar(avatar, controller.signal)
+        : input
+          ? await patchProfile(input, controller.signal)
+          : await getSession(controller.signal);
       if (generation.current !== started || locked.current)
         throw new ApiError('SESSION_CHANGED');
       await client.cancelQueries();
@@ -160,7 +164,7 @@ function SessionProvider({ children }: { children: ReactNode }) {
         throw new ApiError('UNAUTHENTICATED');
       }
       client.setQueryData(sessionKey, result);
-      if (input) channel.current?.postMessage('profile-changed');
+      if (input || avatar) channel.current?.postMessage('profile-changed');
       return result;
     } catch (error) {
       if (
@@ -187,6 +191,7 @@ function SessionProvider({ children }: { children: ReactNode }) {
         profile,
         retainedProfile: action === 'idle' ? (query.data ?? null) : null,
         updateProfile,
+        updateAvatar: (input) => updateProfile(undefined, input),
         canSignOut: !!query.data,
         loading,
         failed: query.isError,
