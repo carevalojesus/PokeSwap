@@ -2,7 +2,7 @@
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
-**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; la persistencia y las funciones del juego siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
+**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las funciones del juego y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
 
 El [README](README.md) define las reglas del producto, perfiles, probabilidades y contratos previstos. Este documento establece cómo implementarlos y cómo añadir una experiencia visual y sonora coherente. Las bibliotecas de la base están fijadas en `package.json` y `package-lock.json`. Las restantes se incorporarán al implementar sus respectivas issues; figurar en esta arquitectura no implica estar instaladas.
 
@@ -165,7 +165,7 @@ public/
 
 Las rutas reciben solicitudes y aplican controles de acceso. Los servicios ejecutan las reglas del juego y la capa de datos persiste resultados. Los módulos compartidos contienen contratos y validaciones, sin secretos ni código privado del servidor. Los componentes no deciden sorteos, propiedad ni permisos.
 
-Las fotos privadas no se guardan en `public/`. Esta estructura describe la organización acordada. La base ya contiene `client/app`, `server` y `shared/contracts`; los módulos restantes se crearán al implementar sus issues.
+Las fotos privadas no se guardan en `public/`. Esta estructura describe la organización acordada. La base ya contiene `client/app`, `server/db`, `shared/contracts` y `migrations`; los módulos restantes se crearán al implementar sus issues.
 
 ### Integridad de operaciones
 
@@ -229,9 +229,9 @@ El alcance completo es exigente para una jornada. La integridad del juego y la p
 
 ## Decisiones pendientes de implementación
 
-- Incorporar las dependencias restantes y los comandos de migración cuando existan D1 y su esquema. La issue #1 fija las versiones de la base y sus comandos de desarrollo, pruebas y despliegue.
+- Incorporar las dependencias de las funciones restantes. Las issues #1 y #2 fijan la base, Drizzle, el esquema D1 y los comandos de migración; ver [modelo de datos](docs/DATOS.md).
 - Elegir y verificar el módulo de autenticación y el hash de contraseñas en Workers.
-- Concretar el esquema de reservas y el SQL atómico de intercambios, con pruebas de precondiciones y concurrencia.
+- Implementar la aceptación completa de intercambios sobre el esquema de reservas y el patrón de aserciones D1 probado en #2. Las pruebas de almacenamiento no sustituyen la validación del servicio de #14.
 - Seleccionar y verificar la validación del contenido WebP en el Worker.
 - Medir capacidad para la clase y comprobar cámara, audio y PWA en los dispositivos previstos.
 

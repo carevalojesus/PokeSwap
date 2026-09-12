@@ -8,20 +8,27 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run cf:types && tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "check": "npm run format:check && npm run lint && npm run test && npm run build",
+    "check": "npm run format:check && npm run lint && npm run db:check && npm run test && npm run build",
     "deploy": "npm run build && wrangler deploy",
     "cf:types": "wrangler types",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:check": "drizzle-kit check",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:test": "wrangler d1 migrations apply DB --env test --remote",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "db:migrations:list": "wrangler d1 migrations list DB --local"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",
+    "drizzle-orm": "0.45.2",
     "hono": "4.13.7",
     "lucide-react": "1.45.0",
     "react": "19.3.0",
@@ -36,6 +43,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.1",
+    "drizzle-kit": "0.31.10",
     "eslint": "10.10.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.6",
@@ -47,5 +55,10 @@
     "vite": "8.3.0",
     "vitest": "4.1.11",
     "wrangler": "4.131.1"
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "0.25.12"
+    }
   }
 }

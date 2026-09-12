@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. Las funciones del juego, D1, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye pantalla inicial, ruta de salud, pruebas y configuración de despliegue. D1 dispone de esquema, migraciones y pruebas de integridad. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -190,7 +190,7 @@ La PWA cachea su shell, pero las consultas actualizadas y todas las operaciones 
 
 ## Persistencia y API de perfiles
 
-Estas tablas son parte del modelo previsto; sus migraciones todavía deben implementarse:
+El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/DATOS.md) detalla tablas, restricciones y límites; las rutas de negocio siguen pendientes:
 
 | Entidad | Información persistida |
 |---|---|
@@ -198,7 +198,7 @@ Estas tablas son parte del modelo previsto; sus migraciones todavía deben imple
 | `sessions` | Hash de token, usuario, vencimiento y revocación. |
 | `avatar_uploads` | ID de operación, usuario, clave de idempotencia única por usuario, huella del archivo, clave de R2, tipo, tamaño, dimensiones, versión de perfil esperada, estado, fechas y último error. |
 | `media_cleanup_jobs` | Objeto candidato a eliminar, motivo, estado y reintentos; nunca elimina la foto actualmente referenciada. |
-| `pokemon_instances` | ID del ejemplar, especie, propietario, origen, versión de probabilidades y fecha de emisión/adquisición. |
+| `pokemon_instances` | ID del ejemplar, especie, propietario, protección, versión, premio/posición de origen y fecha de emisión/adquisición. La versión de probabilidades se conserva en el premio relacionado (`reward_grants`). |
 | Registro, canjes e intercambios | Recompensa inicial única, canje único por evento/alumno con sus tres resultados, reservas y cambios de propietario. |
 
 `users.age` no existe: la edad se calcula en las respuestas privadas. Los objetos de R2 están asociados a una operación y a un usuario; ninguna foto se considera persistida solamente por estar en memoria o en `localStorage`.
@@ -266,7 +266,7 @@ Las pruebas de repetidos usan datos controlados para verificar reglas sin depend
 
 ## Documentación y ejecución
 
-Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Las reglas del juego siguen siendo especificaciones pendientes; la base implementada y sus comandos se detallan a continuación.
+Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Los servicios del juego siguen pendientes. La base, el esquema D1 y sus comandos se detallan a continuación; [DATOS.md](docs/DATOS.md) documenta migraciones y garantías de almacenamiento.
 
 ### Requisitos e instalación
 
@@ -275,6 +275,7 @@ Usar **Node.js 24** (definido en `.nvmrc`) y npm. Las versiones directas están 
 ```sh
 nvm use
 npm ci
+npm run db:migrate:local
 npm run dev
 ```
 
@@ -291,10 +292,16 @@ Vite inicia la aplicación y el Worker local en `http://127.0.0.1:5173` si el pu
 | `npm run format:check` | Comprobar formato de código y configuración. |
 | `npm test` | Ejecutar pruebas de la API dentro del runtime Workers con Vitest. |
 | `npm run build` | Comprobar tipos y compilar cliente y Worker en `dist/`. |
-| `npm run check` | Ejecutar formato, lint, pruebas y build; también se ejecuta en GitHub Actions. |
+| `npm run check` | Ejecutar formato, lint, historial de migraciones, pruebas y build; también se ejecuta en GitHub Actions. |
 | `npm run preview` | Servir localmente el build de producción después de `npm run build`. |
 | `npm run smoke -- http://127.0.0.1:5173` | Comprobar SPA, fallback y API contra el servidor iniciado. Acepta también una URL HTTPS. |
-| `npm run cf:types` | Generar tipos locales de Wrangler tras cambios de bindings. |
+| `npm run cf:types` | Generar tipos locales de Wrangler tras cambios de bindings; typecheck y build lo ejecutan automáticamente. |
+| `npm run db:generate` | Generar una nueva migración SQL desde el esquema Drizzle. |
+| `npm run db:check` | Comprobar el historial de migraciones de Drizzle. |
+| `npm run db:migrate:local` | Aplicar migraciones a D1 local. |
+| `npm run db:migrations:list` | Consultar migraciones pendientes en D1 local. |
+| `npm run db:migrate:test` | Aplicar migraciones a la base remota de pruebas. |
+| `npm run db:migrate:remote` | Aplicar migraciones revisadas a la base de producción. |
 | `npm run deploy` | Compilar y publicar con el Wrangler local del proyecto. |
 
 ### API y alcance de la base
@@ -313,7 +320,7 @@ La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classr
 
 Para publicar desde otra máquina, iniciar sesión con `npx wrangler login`, verificar la cuenta con `npx wrangler whoami` y ejecutar `npm run deploy`. La integración continua valida las PR; todavía no publica automáticamente ni requiere secretos de Cloudflare en GitHub.
 
-No se incluyen credenciales ni secretos en Git. `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1, R2 y los comandos de migración se incorporarán en sus issues; no se simulan ni se anuncian como disponibles.
+No se incluyen credenciales ni secretos en Git. `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1 está configurado con el binding `DB` y bases separadas para producción y pruebas. Validar migraciones localmente y en pruebas antes de aplicarlas a producción; `deploy` no las aplica automáticamente. Las pruebas de Vitest usan otra base temporal y no requieren acceso a tus bases remotas. R2 y los servicios del juego siguen pendientes.
 
 Referencia: [React y Vite en Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/react/).
 

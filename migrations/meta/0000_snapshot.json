@@ -1,0 +1,1381 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "52b7abbc-4280-484e-9ab1-991c4f590803",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "avatar_uploads": {
+      "name": "avatar_uploads",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_hash": {
+          "name": "file_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "object_key": {
+          "name": "object_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'image/webp'"
+        },
+        "size_bytes": {
+          "name": "size_bytes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "width": {
+          "name": "width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expected_profile_version": {
+          "name": "expected_profile_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "last_error": {
+          "name": "last_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "avatar_uploads_idempotency_unique": {
+          "name": "avatar_uploads_idempotency_unique",
+          "columns": ["user_id", "idempotency_key"],
+          "isUnique": true
+        },
+        "avatar_uploads_object_unique": {
+          "name": "avatar_uploads_object_unique",
+          "columns": ["object_key"],
+          "isUnique": true
+        },
+        "avatar_uploads_reconcile_idx": {
+          "name": "avatar_uploads_reconcile_idx",
+          "columns": ["state", "updated_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "avatar_uploads_user_id_users_id_fk": {
+          "name": "avatar_uploads_user_id_users_id_fk",
+          "tableFrom": "avatar_uploads",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "avatar_uploads_keys_valid": {
+          "name": "avatar_uploads_keys_valid",
+          "value": "length(\"avatar_uploads\".\"idempotency_key\") > 0 AND length(\"avatar_uploads\".\"object_key\") > 0 AND length(\"avatar_uploads\".\"file_hash\") = 64 AND \"avatar_uploads\".\"file_hash\" NOT GLOB '*[^0-9a-f]*'"
+        },
+        "avatar_uploads_image_valid": {
+          "name": "avatar_uploads_image_valid",
+          "value": "\"avatar_uploads\".\"content_type\" = 'image/webp' AND \"avatar_uploads\".\"width\" = 512 AND \"avatar_uploads\".\"height\" = 512 AND \"avatar_uploads\".\"size_bytes\" BETWEEN 1 AND 1048576"
+        },
+        "avatar_uploads_state_valid": {
+          "name": "avatar_uploads_state_valid",
+          "value": "\"avatar_uploads\".\"state\" IN ('pending', 'stored', 'committed', 'failed')"
+        },
+        "avatar_uploads_version_dates_valid": {
+          "name": "avatar_uploads_version_dates_valid",
+          "value": "\"avatar_uploads\".\"expected_profile_version\" >= 0 AND \"avatar_uploads\".\"created_at\" >= 0 AND \"avatar_uploads\".\"updated_at\" >= \"avatar_uploads\".\"created_at\""
+        }
+      }
+    },
+    "instance_events": {
+      "name": "instance_events",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "instance_id": {
+          "name": "instance_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "instance_version": {
+          "name": "instance_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "from_user_id": {
+          "name": "from_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "to_user_id": {
+          "name": "to_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "grant_id": {
+          "name": "grant_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "trade_id": {
+          "name": "trade_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "instance_events_version_unique": {
+          "name": "instance_events_version_unique",
+          "columns": ["instance_id", "instance_version"],
+          "isUnique": true
+        },
+        "instance_events_trade_unique": {
+          "name": "instance_events_trade_unique",
+          "columns": ["trade_id", "instance_id"],
+          "isUnique": true,
+          "where": "\"instance_events\".\"kind\" = 'traded'"
+        },
+        "instance_events_grant_idx": {
+          "name": "instance_events_grant_idx",
+          "columns": ["grant_id"],
+          "isUnique": false
+        },
+        "instance_events_recipient_idx": {
+          "name": "instance_events_recipient_idx",
+          "columns": ["to_user_id", "created_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "instance_events_instance_id_pokemon_instances_id_fk": {
+          "name": "instance_events_instance_id_pokemon_instances_id_fk",
+          "tableFrom": "instance_events",
+          "tableTo": "pokemon_instances",
+          "columnsFrom": ["instance_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "instance_events_from_user_id_users_id_fk": {
+          "name": "instance_events_from_user_id_users_id_fk",
+          "tableFrom": "instance_events",
+          "tableTo": "users",
+          "columnsFrom": ["from_user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "instance_events_to_user_id_users_id_fk": {
+          "name": "instance_events_to_user_id_users_id_fk",
+          "tableFrom": "instance_events",
+          "tableTo": "users",
+          "columnsFrom": ["to_user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "instance_events_grant_id_reward_grants_id_fk": {
+          "name": "instance_events_grant_id_reward_grants_id_fk",
+          "tableFrom": "instance_events",
+          "tableTo": "reward_grants",
+          "columnsFrom": ["grant_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "instance_events_trade_id_trades_id_fk": {
+          "name": "instance_events_trade_id_trades_id_fk",
+          "tableFrom": "instance_events",
+          "tableTo": "trades",
+          "columnsFrom": ["trade_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "instance_events_kind_shape": {
+          "name": "instance_events_kind_shape",
+          "value": "(\"instance_events\".\"kind\" = 'issued' AND \"instance_events\".\"from_user_id\" IS NULL AND \"instance_events\".\"grant_id\" IS NOT NULL AND \"instance_events\".\"trade_id\" IS NULL AND \"instance_events\".\"instance_version\" = 0) OR (\"instance_events\".\"kind\" = 'traded' AND \"instance_events\".\"from_user_id\" IS NOT NULL AND \"instance_events\".\"from_user_id\" <> \"instance_events\".\"to_user_id\" AND \"instance_events\".\"grant_id\" IS NULL AND \"instance_events\".\"trade_id\" IS NOT NULL AND \"instance_events\".\"instance_version\" > 0)"
+        },
+        "instance_events_dates_valid": {
+          "name": "instance_events_dates_valid",
+          "value": "\"instance_events\".\"created_at\" >= 0"
+        }
+      }
+    },
+    "media_cleanup_jobs": {
+      "name": "media_cleanup_jobs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "object_key": {
+          "name": "object_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "next_attempt_at": {
+          "name": "next_attempt_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lease_expires_at": {
+          "name": "lease_expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "last_error": {
+          "name": "last_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "media_cleanup_jobs_active_unique": {
+          "name": "media_cleanup_jobs_active_unique",
+          "columns": ["object_key"],
+          "isUnique": true,
+          "where": "\"media_cleanup_jobs\".\"state\" IN ('pending', 'processing')"
+        },
+        "media_cleanup_jobs_due_idx": {
+          "name": "media_cleanup_jobs_due_idx",
+          "columns": ["state", "next_attempt_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "media_cleanup_jobs_object_key_avatar_uploads_object_key_fk": {
+          "name": "media_cleanup_jobs_object_key_avatar_uploads_object_key_fk",
+          "tableFrom": "media_cleanup_jobs",
+          "tableTo": "avatar_uploads",
+          "columnsFrom": ["object_key"],
+          "columnsTo": ["object_key"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "media_cleanup_jobs_reason_valid": {
+          "name": "media_cleanup_jobs_reason_valid",
+          "value": "\"media_cleanup_jobs\".\"reason\" IN ('replaced', 'removed', 'abandoned', 'failed')"
+        },
+        "media_cleanup_jobs_state_valid": {
+          "name": "media_cleanup_jobs_state_valid",
+          "value": "\"media_cleanup_jobs\".\"state\" IN ('pending', 'processing', 'completed')"
+        },
+        "media_cleanup_jobs_lease_shape": {
+          "name": "media_cleanup_jobs_lease_shape",
+          "value": "(\"media_cleanup_jobs\".\"state\" = 'processing' AND \"media_cleanup_jobs\".\"lease_expires_at\" IS NOT NULL AND \"media_cleanup_jobs\".\"lease_expires_at\" > \"media_cleanup_jobs\".\"updated_at\") OR (\"media_cleanup_jobs\".\"state\" <> 'processing' AND \"media_cleanup_jobs\".\"lease_expires_at\" IS NULL)"
+        },
+        "media_cleanup_jobs_dates_valid": {
+          "name": "media_cleanup_jobs_dates_valid",
+          "value": "\"media_cleanup_jobs\".\"attempts\" >= 0 AND \"media_cleanup_jobs\".\"created_at\" >= 0 AND \"media_cleanup_jobs\".\"updated_at\" >= \"media_cleanup_jobs\".\"created_at\" AND \"media_cleanup_jobs\".\"next_attempt_at\" >= 0"
+        }
+      }
+    },
+    "poke_drops": {
+      "name": "poke_drops",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "creator_id": {
+          "name": "creator_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "poke_drops_token_unique": {
+          "name": "poke_drops_token_unique",
+          "columns": ["token_hash"],
+          "isUnique": true
+        },
+        "poke_drops_creator_created_idx": {
+          "name": "poke_drops_creator_created_idx",
+          "columns": ["creator_id", "created_at"],
+          "isUnique": false
+        },
+        "poke_drops_expiry_idx": {
+          "name": "poke_drops_expiry_idx",
+          "columns": ["expires_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "poke_drops_creator_id_users_id_fk": {
+          "name": "poke_drops_creator_id_users_id_fk",
+          "tableFrom": "poke_drops",
+          "tableTo": "users",
+          "columnsFrom": ["creator_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "poke_drops_hash_valid": {
+          "name": "poke_drops_hash_valid",
+          "value": "length(\"poke_drops\".\"token_hash\") = 64 AND \"poke_drops\".\"token_hash\" NOT GLOB '*[^0-9a-f]*'"
+        },
+        "poke_drops_dates_valid": {
+          "name": "poke_drops_dates_valid",
+          "value": "\"poke_drops\".\"created_at\" >= 0 AND \"poke_drops\".\"expires_at\" > \"poke_drops\".\"created_at\" AND (\"poke_drops\".\"cancelled_at\" IS NULL OR \"poke_drops\".\"cancelled_at\" >= \"poke_drops\".\"created_at\") AND \"poke_drops\".\"version\" >= 0"
+        }
+      }
+    },
+    "pokemon_instances": {
+      "name": "pokemon_instances",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "species_id": {
+          "name": "species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "grant_id": {
+          "name": "grant_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "grant_slot": {
+          "name": "grant_slot",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_protected": {
+          "name": "is_protected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "acquired_at": {
+          "name": "acquired_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "pokemon_instances_grant_slot_unique": {
+          "name": "pokemon_instances_grant_slot_unique",
+          "columns": ["grant_id", "grant_slot"],
+          "isUnique": true
+        },
+        "pokemon_instances_protected_unique": {
+          "name": "pokemon_instances_protected_unique",
+          "columns": ["owner_id", "species_id"],
+          "isUnique": true,
+          "where": "\"pokemon_instances\".\"is_protected\" = 1"
+        },
+        "pokemon_instances_collection_idx": {
+          "name": "pokemon_instances_collection_idx",
+          "columns": ["owner_id", "species_id", "is_protected"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "pokemon_instances_species_id_pokemon_species_id_fk": {
+          "name": "pokemon_instances_species_id_pokemon_species_id_fk",
+          "tableFrom": "pokemon_instances",
+          "tableTo": "pokemon_species",
+          "columnsFrom": ["species_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "pokemon_instances_owner_id_users_id_fk": {
+          "name": "pokemon_instances_owner_id_users_id_fk",
+          "tableFrom": "pokemon_instances",
+          "tableTo": "users",
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "pokemon_instances_grant_id_reward_grants_id_fk": {
+          "name": "pokemon_instances_grant_id_reward_grants_id_fk",
+          "tableFrom": "pokemon_instances",
+          "tableTo": "reward_grants",
+          "columnsFrom": ["grant_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "pokemon_instances_slot_valid": {
+          "name": "pokemon_instances_slot_valid",
+          "value": "\"pokemon_instances\".\"grant_slot\" BETWEEN 0 AND 2"
+        },
+        "pokemon_instances_protected_valid": {
+          "name": "pokemon_instances_protected_valid",
+          "value": "\"pokemon_instances\".\"is_protected\" IN (0, 1)"
+        },
+        "pokemon_instances_version_dates_valid": {
+          "name": "pokemon_instances_version_dates_valid",
+          "value": "\"pokemon_instances\".\"version\" >= 0 AND \"pokemon_instances\".\"created_at\" >= 0 AND \"pokemon_instances\".\"acquired_at\" >= \"pokemon_instances\".\"created_at\""
+        }
+      }
+    },
+    "pokemon_species": {
+      "name": "pokemon_species",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image_path": {
+          "name": "image_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "pokemon_species_name_unique": {
+          "name": "pokemon_species_name_unique",
+          "columns": ["name"],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "pokemon_species_id_valid": {
+          "name": "pokemon_species_id_valid",
+          "value": "\"pokemon_species\".\"id\" BETWEEN 1 AND 151"
+        },
+        "pokemon_species_content_valid": {
+          "name": "pokemon_species_content_valid",
+          "value": "length(trim(\"pokemon_species\".\"name\")) > 0 AND length(trim(\"pokemon_species\".\"image_path\")) > 0"
+        }
+      }
+    },
+    "reward_grants": {
+      "name": "reward_grants",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "drop_id": {
+          "name": "drop_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "draw_count": {
+          "name": "draw_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "probabilities_version": {
+          "name": "probabilities_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "reward_grants_initial_unique": {
+          "name": "reward_grants_initial_unique",
+          "columns": ["user_id"],
+          "isUnique": true,
+          "where": "\"reward_grants\".\"kind\" = 'initial'"
+        },
+        "reward_grants_redemption_unique": {
+          "name": "reward_grants_redemption_unique",
+          "columns": ["drop_id", "user_id"],
+          "isUnique": true,
+          "where": "\"reward_grants\".\"kind\" = 'drop'"
+        },
+        "reward_grants_user_created_idx": {
+          "name": "reward_grants_user_created_idx",
+          "columns": ["user_id", "created_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "reward_grants_user_id_users_id_fk": {
+          "name": "reward_grants_user_id_users_id_fk",
+          "tableFrom": "reward_grants",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "reward_grants_drop_id_poke_drops_id_fk": {
+          "name": "reward_grants_drop_id_poke_drops_id_fk",
+          "tableFrom": "reward_grants",
+          "tableTo": "poke_drops",
+          "columnsFrom": ["drop_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "reward_grants_kind_shape": {
+          "name": "reward_grants_kind_shape",
+          "value": "(\"reward_grants\".\"kind\" = 'initial' AND \"reward_grants\".\"drop_id\" IS NULL AND \"reward_grants\".\"draw_count\" = 1) OR (\"reward_grants\".\"kind\" = 'drop' AND \"reward_grants\".\"drop_id\" IS NOT NULL AND \"reward_grants\".\"draw_count\" = 3)"
+        },
+        "reward_grants_version_dates_valid": {
+          "name": "reward_grants_version_dates_valid",
+          "value": "\"reward_grants\".\"probabilities_version\" > 0 AND \"reward_grants\".\"created_at\" >= 0"
+        }
+      }
+    },
+    "sessions": {
+      "name": "sessions",
+      "columns": {
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "sessions_user_idx": {
+          "name": "sessions_user_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "sessions_expiry_idx": {
+          "name": "sessions_expiry_idx",
+          "columns": ["expires_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "sessions_user_id_users_id_fk": {
+          "name": "sessions_user_id_users_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "sessions_hash_valid": {
+          "name": "sessions_hash_valid",
+          "value": "length(\"sessions\".\"token_hash\") = 64 AND \"sessions\".\"token_hash\" NOT GLOB '*[^0-9a-f]*'"
+        },
+        "sessions_dates_valid": {
+          "name": "sessions_dates_valid",
+          "value": "\"sessions\".\"created_at\" >= 0 AND \"sessions\".\"expires_at\" > \"sessions\".\"created_at\" AND (\"sessions\".\"revoked_at\" IS NULL OR \"sessions\".\"revoked_at\" >= \"sessions\".\"created_at\")"
+        }
+      }
+    },
+    "trade_reservations": {
+      "name": "trade_reservations",
+      "columns": {
+        "instance_id": {
+          "name": "instance_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "trade_id": {
+          "name": "trade_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "side": {
+          "name": "side",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "trade_reservations_side_unique": {
+          "name": "trade_reservations_side_unique",
+          "columns": ["trade_id", "side"],
+          "isUnique": true
+        },
+        "trade_reservations_expiry_idx": {
+          "name": "trade_reservations_expiry_idx",
+          "columns": ["expires_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "trade_reservations_instance_id_pokemon_instances_id_fk": {
+          "name": "trade_reservations_instance_id_pokemon_instances_id_fk",
+          "tableFrom": "trade_reservations",
+          "tableTo": "pokemon_instances",
+          "columnsFrom": ["instance_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "trade_reservations_trade_id_trades_id_fk": {
+          "name": "trade_reservations_trade_id_trades_id_fk",
+          "tableFrom": "trade_reservations",
+          "tableTo": "trades",
+          "columnsFrom": ["trade_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "trade_reservations_user_id_users_id_fk": {
+          "name": "trade_reservations_user_id_users_id_fk",
+          "tableFrom": "trade_reservations",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "trade_reservations_side_valid": {
+          "name": "trade_reservations_side_valid",
+          "value": "\"trade_reservations\".\"side\" IN ('offer', 'proposal')"
+        },
+        "trade_reservations_dates_valid": {
+          "name": "trade_reservations_dates_valid",
+          "value": "\"trade_reservations\".\"created_at\" >= 0 AND \"trade_reservations\".\"expires_at\" > \"trade_reservations\".\"created_at\""
+        }
+      }
+    },
+    "trades": {
+      "name": "trades",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "offerer_id": {
+          "name": "offerer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "offered_instance_id": {
+          "name": "offered_instance_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "proposer_id": {
+          "name": "proposer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "proposed_instance_id": {
+          "name": "proposed_instance_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'open'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "offer_expires_at": {
+          "name": "offer_expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "proposed_at": {
+          "name": "proposed_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "proposal_expires_at": {
+          "name": "proposal_expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "trades_token_unique": {
+          "name": "trades_token_unique",
+          "columns": ["token_hash"],
+          "isUnique": true
+        },
+        "trades_offerer_state_idx": {
+          "name": "trades_offerer_state_idx",
+          "columns": ["offerer_id", "state", "created_at"],
+          "isUnique": false
+        },
+        "trades_proposer_state_idx": {
+          "name": "trades_proposer_state_idx",
+          "columns": ["proposer_id", "state", "created_at"],
+          "isUnique": false
+        },
+        "trades_offer_expiry_idx": {
+          "name": "trades_offer_expiry_idx",
+          "columns": ["state", "offer_expires_at"],
+          "isUnique": false
+        },
+        "trades_proposal_expiry_idx": {
+          "name": "trades_proposal_expiry_idx",
+          "columns": ["state", "proposal_expires_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "trades_offerer_id_users_id_fk": {
+          "name": "trades_offerer_id_users_id_fk",
+          "tableFrom": "trades",
+          "tableTo": "users",
+          "columnsFrom": ["offerer_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "trades_offered_instance_id_pokemon_instances_id_fk": {
+          "name": "trades_offered_instance_id_pokemon_instances_id_fk",
+          "tableFrom": "trades",
+          "tableTo": "pokemon_instances",
+          "columnsFrom": ["offered_instance_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "trades_proposer_id_users_id_fk": {
+          "name": "trades_proposer_id_users_id_fk",
+          "tableFrom": "trades",
+          "tableTo": "users",
+          "columnsFrom": ["proposer_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "trades_proposed_instance_id_pokemon_instances_id_fk": {
+          "name": "trades_proposed_instance_id_pokemon_instances_id_fk",
+          "tableFrom": "trades",
+          "tableTo": "pokemon_instances",
+          "columnsFrom": ["proposed_instance_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "trades_hash_valid": {
+          "name": "trades_hash_valid",
+          "value": "length(\"trades\".\"token_hash\") = 64 AND \"trades\".\"token_hash\" NOT GLOB '*[^0-9a-f]*'"
+        },
+        "trades_state_valid": {
+          "name": "trades_state_valid",
+          "value": "\"trades\".\"state\" IN ('open', 'pending', 'completed', 'rejected', 'cancelled', 'expired')"
+        },
+        "trades_proposal_shape": {
+          "name": "trades_proposal_shape",
+          "value": "(\"trades\".\"proposer_id\" IS NULL AND \"trades\".\"proposed_instance_id\" IS NULL AND \"trades\".\"proposed_at\" IS NULL AND \"trades\".\"proposal_expires_at\" IS NULL) OR (\"trades\".\"proposer_id\" IS NOT NULL AND \"trades\".\"proposed_instance_id\" IS NOT NULL AND \"trades\".\"proposed_at\" IS NOT NULL AND \"trades\".\"proposal_expires_at\" IS NOT NULL AND \"trades\".\"proposer_id\" <> \"trades\".\"offerer_id\" AND \"trades\".\"proposed_instance_id\" <> \"trades\".\"offered_instance_id\" AND \"trades\".\"proposed_at\" >= \"trades\".\"created_at\" AND \"trades\".\"proposed_at\" < \"trades\".\"offer_expires_at\" AND \"trades\".\"proposal_expires_at\" > \"trades\".\"proposed_at\")"
+        },
+        "trades_state_shape": {
+          "name": "trades_state_shape",
+          "value": "(\"trades\".\"state\" <> 'open' OR \"trades\".\"proposer_id\" IS NULL) AND (\"trades\".\"state\" NOT IN ('pending', 'completed', 'rejected') OR \"trades\".\"proposer_id\" IS NOT NULL)"
+        },
+        "trades_closed_shape": {
+          "name": "trades_closed_shape",
+          "value": "(\"trades\".\"state\" IN ('open', 'pending') AND \"trades\".\"closed_at\" IS NULL) OR (\"trades\".\"state\" IN ('completed', 'rejected', 'cancelled', 'expired') AND \"trades\".\"closed_at\" IS NOT NULL AND \"trades\".\"closed_at\" >= \"trades\".\"created_at\")"
+        },
+        "trades_version_dates_valid": {
+          "name": "trades_version_dates_valid",
+          "value": "\"trades\".\"version\" >= 0 AND \"trades\".\"created_at\" >= 0 AND \"trades\".\"offer_expires_at\" > \"trades\".\"created_at\""
+        }
+      }
+    },
+    "transaction_guards": {
+      "name": "transaction_guards",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ok": {
+          "name": "ok",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "transaction_guards_ok": {
+          "name": "transaction_guards_ok",
+          "value": "\"transaction_guards\".\"ok\" = 1"
+        }
+      }
+    },
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "senati_id": {
+          "name": "senati_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "first_names": {
+          "name": "first_names",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "last_names": {
+          "name": "last_names",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "birth_date": {
+          "name": "birth_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "trainer_name": {
+          "name": "trainer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "trainer_name_key": {
+          "name": "trainer_name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "trainer_name_version": {
+          "name": "trainer_name_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'student'"
+        },
+        "avatar_object_key": {
+          "name": "avatar_object_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "profile_version": {
+          "name": "profile_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "users_senati_id_unique": {
+          "name": "users_senati_id_unique",
+          "columns": ["senati_id"],
+          "isUnique": true
+        },
+        "users_trainer_key_unique": {
+          "name": "users_trainer_key_unique",
+          "columns": ["trainer_name_key"],
+          "isUnique": true
+        },
+        "users_role_created_idx": {
+          "name": "users_role_created_idx",
+          "columns": ["role", "created_at", "id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "users_avatar_object_key_avatar_uploads_object_key_fk": {
+          "name": "users_avatar_object_key_avatar_uploads_object_key_fk",
+          "tableFrom": "users",
+          "tableTo": "avatar_uploads",
+          "columnsFrom": ["avatar_object_key"],
+          "columnsTo": ["object_key"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "users_senati_format": {
+          "name": "users_senati_format",
+          "value": "length(\"users\".\"senati_id\") BETWEEN 1 AND 32 AND \"users\".\"senati_id\" = trim(\"users\".\"senati_id\") AND \"users\".\"senati_id\" = upper(\"users\".\"senati_id\") AND instr(\"users\".\"senati_id\", ' ') = 0 AND instr(\"users\".\"senati_id\", char(9)) = 0 AND instr(\"users\".\"senati_id\", char(10)) = 0 AND instr(\"users\".\"senati_id\", char(13)) = 0"
+        },
+        "users_names_valid": {
+          "name": "users_names_valid",
+          "value": "length(trim(\"users\".\"first_names\")) BETWEEN 1 AND 100 AND length(trim(\"users\".\"last_names\")) BETWEEN 1 AND 100"
+        },
+        "users_birth_date_valid": {
+          "name": "users_birth_date_valid",
+          "value": "length(\"users\".\"birth_date\") = 10 AND \"users\".\"birth_date\" GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' AND \"users\".\"birth_date\" >= '0001-01-01' AND date(\"users\".\"birth_date\", '+0 days') IS NOT NULL AND date(\"users\".\"birth_date\", '+0 days') = \"users\".\"birth_date\""
+        },
+        "users_alias_valid": {
+          "name": "users_alias_valid",
+          "value": "length(trim(\"users\".\"trainer_name\")) > 0 AND length(trim(\"users\".\"trainer_name_key\")) > 0 AND \"users\".\"trainer_name_version\" > 0"
+        },
+        "users_password_hash_present": {
+          "name": "users_password_hash_present",
+          "value": "length(\"users\".\"password_hash\") > 0"
+        },
+        "users_role_valid": {
+          "name": "users_role_valid",
+          "value": "\"users\".\"role\" IN ('student', 'teacher')"
+        },
+        "users_version_dates_valid": {
+          "name": "users_version_dates_valid",
+          "value": "\"users\".\"profile_version\" >= 0 AND \"users\".\"created_at\" >= 0 AND \"users\".\"updated_at\" >= \"users\".\"created_at\""
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

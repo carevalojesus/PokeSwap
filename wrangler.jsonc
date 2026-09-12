@@ -4,6 +4,26 @@
   "main": "src/server/index.ts",
   "compatibility_date": "2026-09-11",
   "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pokeswap-classroom-db",
+      "database_id": "21795ed3-b5d6-4c19-9172-b908d24294c1",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "env": {
+    "test": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "pokeswap-classroom-test",
+          "database_id": "d4a280aa-d41c-4466-9f72-c3ea5437041c",
+          "migrations_dir": "migrations",
+        },
+      ],
+    },
+  },
   "assets": {
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api", "/api/*"],
