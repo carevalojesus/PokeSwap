@@ -5,7 +5,8 @@ import {
   AnonymousOnly,
 } from '../features/auth/session-boundary';
 import { AuthPage } from '../features/auth/auth-page';
-import { AccountPage, InitialPage } from '../features/auth/account-page';
+import { AccountPage } from '../features/auth/account-page';
+import { CollectionPage } from '../features/collection/collection-page';
 import { AppLayout } from './layout';
 import { HomePage } from '../features/home/home-page';
 import { PokedexPage } from '../features/pokedex/pokedex-page';
@@ -51,7 +52,7 @@ export function App() {
               />
             </Route>
             <Route element={<RequireSession role="student" />}>
-              <Route path="coleccion" element={<InitialPage />} />
+              <Route path="coleccion" element={<CollectionPage />} />
             </Route>
             <Route element={<RequireSession role="teacher" />}>
               <Route path="docente">

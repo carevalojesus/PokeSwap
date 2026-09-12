@@ -71,6 +71,10 @@ function SessionProvider({ children }: { children: ReactNode }) {
     channel.current = connection;
     connection.onmessage = async (event: MessageEvent<unknown>) => {
       if (locked.current) return;
+      if (event.data === 'collection-changed') {
+        void client.invalidateQueries({ queryKey: ['private', 'collection'] });
+        return;
+      }
       if (event.data === 'profile-changed') {
         void refetch();
         return;

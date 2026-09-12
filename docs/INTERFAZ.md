@@ -4,18 +4,18 @@ La tarea #6 incorpora la base visual de PokéSwap: React Router en modo declarat
 
 ## Rutas y alcance
 
-| Ruta                                                 | Estado actual (#8)                                             |
-| ---------------------------------------------------- | -------------------------------------------------------------- |
-| `/`                                                  | Inicio con catálogo, reglas y acceso a la cuenta.              |
-| `/pokedex`                                           | Catálogo público, búsqueda, filtros y fichas.                  |
-| `/registro`, `/ingresar`                             | Formularios conectados a API y confirmación de sesión.         |
-| `/perfil`                                            | Datos propios y edición con versión; foto privada con recorte. |
-| `/coleccion`                                         | Entrega inicial real del alumno; colección completa pendiente. |
-| `/intercambios`, `/ranking`                          | Sesión requerida y mensaje de disponibilidad.                  |
-| `/docente`, `/docente/alumnos`, `/docente/pokedrops` | Sesión y rol docente requeridos; gestión completa pendiente.   |
-| Cualquier otra ruta                                  | Página no encontrada con retorno al inicio.                    |
+| Ruta                                                 | Estado actual (#8)                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------ |
+| `/`                                                  | Inicio con catálogo, reglas y acceso a la cuenta.                  |
+| `/pokedex`                                           | Catálogo público, búsqueda, filtros y fichas.                      |
+| `/registro`, `/ingresar`                             | Formularios conectados a API y confirmación de sesión.             |
+| `/perfil`                                            | Datos propios y edición con versión; foto privada con recorte.     |
+| `/coleccion`                                         | Colección agrupada, duplicados, reservas, progreso e inicial real. |
+| `/intercambios`, `/ranking`                          | Sesión requerida y mensaje de disponibilidad.                      |
+| `/docente`, `/docente/alumnos`, `/docente/pokedrops` | Sesión y rol docente requeridos; gestión completa pendiente.       |
+| Cualquier otra ruta                                  | Página no encontrada con retorno al inicio.                        |
 
-La tarea #7 conecta sesión, formularios y datos privados; ver [acceso implementado](ACCESO.md). Visitar `/docente` no concede rol. La API conserva su propia autorización en cada solicitud. Colección/progreso en #10, intercambios en #13–#15 y panel completo en #16.
+La tarea #7 conecta sesión, formularios y datos privados; ver [acceso implementado](ACCESO.md). Visitar `/docente` no concede rol. La API conserva su propia autorización en cada solicitud. Colección/progreso implementados en #10; intercambios en #13–#15 y panel completo en #16.
 
 El catálogo distingue la meta #001–#150 y Mew #151 adicional. El diálogo de reglas muestra `Pikachu ×5`, un protegido y cuatro disponibles como **ejemplo explícito sin reservas**, nunca como estado de una cuenta. No se inventan tipos, estadísticas de combate o cantidades ausentes del catálogo.
 

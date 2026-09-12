@@ -15,7 +15,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request(path: string, options: RequestInit = {}) {
+export async function request(path: string, options: RequestInit = {}) {
   try {
     const timeout = AbortSignal.timeout(15_000);
     const signal = options.signal

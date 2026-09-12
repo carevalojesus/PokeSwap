@@ -1,4 +1,5 @@
 import mediaRoutes from './media/routes';
+import { getCollection } from './collection/service';
 import { reconcileMedia } from './media/cleanup';
 import { Hono } from 'hono';
 import profileRoutes from './auth/profile-routes';
@@ -34,6 +35,18 @@ app.route('/api', mediaRoutes);
 app.route('/api/me', profileRoutes);
 app.use('/api/me/*', requireSession);
 app.use('/api/admin/*', requireSession, requireTeacher);
+app.get('/api/me/collection', async (c) => {
+  const identity = c.get('identity');
+  if (identity.role !== 'student')
+    return c.json(
+      {
+        error: 'La colección pertenece a cuentas de alumno.',
+        code: 'FORBIDDEN',
+      },
+      403,
+    );
+  return c.json(await getCollection(c.env.DB, identity.userId));
+});
 app.get('/api/me', async (c) => {
   const profile = await getPrivateProfile(c.env.DB, c.get('identity').userId);
   if (!profile) return c.json({ error: 'Perfil no encontrado.' }, 404);
