@@ -2,9 +2,9 @@
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
-**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026; implementación, infraestructura y despliegue pendientes.
+**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; la persistencia y las funciones del juego siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
 
-El [README](README.md) define las reglas del producto, perfiles, probabilidades y contratos previstos. Este documento establece cómo implementarlos y cómo añadir una experiencia visual y sonora coherente. La selección de bibliotecas no implica que ya estén instaladas. Las versiones compatibles se fijarán en el manifiesto y archivo de bloqueo al crear el proyecto.
+El [README](README.md) define las reglas del producto, perfiles, probabilidades y contratos previstos. Este documento establece cómo implementarlos y cómo añadir una experiencia visual y sonora coherente. Las bibliotecas de la base están fijadas en `package.json` y `package-lock.json`. Las restantes se incorporarán al implementar sus respectivas issues; figurar en esta arquitectura no implica estar instaladas.
 
 ## Objetivo y decisiones principales
 
@@ -165,7 +165,7 @@ public/
 
 Las rutas reciben solicitudes y aplican controles de acceso. Los servicios ejecutan las reglas del juego y la capa de datos persiste resultados. Los módulos compartidos contienen contratos y validaciones, sin secretos ni código privado del servidor. Los componentes no deciden sorteos, propiedad ni permisos.
 
-Las fotos privadas no se guardan en `public/`. Esta estructura se creará durante la implementación; actualmente describe la organización acordada.
+Las fotos privadas no se guardan en `public/`. Esta estructura describe la organización acordada. La base ya contiene `client/app`, `server` y `shared/contracts`; los módulos restantes se crearán al implementar sus issues.
 
 ### Integridad de operaciones
 
@@ -229,10 +229,10 @@ El alcance completo es exigente para una jornada. La integridad del juego y la p
 
 ## Decisiones pendientes de implementación
 
-- Fijar versiones compatibles de dependencias y crear los comandos de desarrollo, migración, pruebas y despliegue.
+- Incorporar las dependencias restantes y los comandos de migración cuando existan D1 y su esquema. La issue #1 fija las versiones de la base y sus comandos de desarrollo, pruebas y despliegue.
 - Elegir y verificar el módulo de autenticación y el hash de contraseñas en Workers.
 - Concretar el esquema de reservas y el SQL atómico de intercambios, con pruebas de precondiciones y concurrencia.
 - Seleccionar y verificar la validación del contenido WebP en el Worker.
 - Medir capacidad para la clase y comprobar cámara, audio y PWA en los dispositivos previstos.
 
-Estas verificaciones completan las decisiones de implementación sin alterar el stack acordado. No se declara ninguna función implementada hasta contar con código y validación. Los comandos ejecutables se documentarán en el README cuando existan.
+Estas verificaciones completan las decisiones de implementación sin alterar el stack acordado. No se declara ninguna función implementada hasta contar con código y validación. Los comandos ejecutables existentes se documentan en el README; los pendientes se añadirán cuando se implementen.
