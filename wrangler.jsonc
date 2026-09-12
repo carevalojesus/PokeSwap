@@ -5,6 +5,10 @@
   "compatibility_date": "2026-09-11",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "r2_buckets": [
+    { "binding": "AVATARS", "bucket_name": "pokeswap-classroom-avatars" },
+  ],
+  "triggers": { "crons": ["*/15 * * * *"] },
   "ratelimits": [
     {
       "name": "AUTH_IP_LIMITER",
@@ -27,6 +31,13 @@
   ],
   "env": {
     "test": {
+      "r2_buckets": [
+        {
+          "binding": "AVATARS",
+          "bucket_name": "pokeswap-classroom-avatars-test",
+        },
+      ],
+      "triggers": { "crons": [] },
       "ratelimits": [
         {
           "name": "AUTH_IP_LIMITER",

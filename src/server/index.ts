@@ -1,3 +1,5 @@
+import mediaRoutes from './media/routes';
+import { reconcileMedia } from './media/cleanup';
 import { Hono } from 'hono';
 import profileRoutes from './auth/profile-routes';
 import authRoutes from './auth/routes';
@@ -28,6 +30,7 @@ app.get('/api/health', (context) => {
 
 app.use('/api/*', sameOriginMutation);
 app.route('/api/auth', authRoutes);
+app.route('/api', mediaRoutes);
 app.route('/api/me', profileRoutes);
 app.use('/api/me/*', requireSession);
 app.use('/api/admin/*', requireSession, requireTeacher);
@@ -50,4 +53,8 @@ app.onError((_error, context) =>
   context.json({ error: 'No se pudo completar la solicitud.' }, 500),
 );
 
-export default app;
+export default Object.assign(app, {
+  async scheduled(_controller: ScheduledController, env: AuthEnv['Bindings']) {
+    await reconcileMedia(env);
+  },
+});

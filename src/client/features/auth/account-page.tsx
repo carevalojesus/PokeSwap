@@ -1,3 +1,4 @@
+import { AvatarPanel } from '../avatar/avatar-panel';
 import { useEffect, useRef, useState } from 'react';
 import { ProfileEditor } from './profile-editor';
 import { Link } from 'react-router';
@@ -37,6 +38,7 @@ export function AccountPage() {
         title="Mi perfil"
         description="Consulta y corrige tus datos personales. La edad se calcula con la fecha actual de Lima."
       />
+      <AvatarPanel />
       {saved && (
         <p
           ref={confirmation}

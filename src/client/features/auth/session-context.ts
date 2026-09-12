@@ -1,3 +1,4 @@
+import type { AvatarMutation } from '../../lib/api/auth';
 import type { ProfileUpdate } from '../../../shared/schemas/profile';
 import { createContext, useContext } from 'react';
 import type { AuthenticatedProfile } from '../../../shared/contracts/auth';
@@ -9,6 +10,7 @@ export const SessionContext = createContext<{
   profile: AuthenticatedProfile | null;
   retainedProfile: AuthenticatedProfile | null;
   updateProfile: (input?: ProfileUpdate) => Promise<AuthenticatedProfile>;
+  updateAvatar: (input: AvatarMutation) => Promise<AuthenticatedProfile>;
   canSignOut: boolean;
   loading: boolean;
   failed: boolean;

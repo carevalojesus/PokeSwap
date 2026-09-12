@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección completa y los PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección completa y los PokéDrops siguen pendientes. Las fotos privadas con recorte y R2 están implementadas; ver [fotos y recuperación](docs/FOTOS.md). Las funciones del juego y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -209,7 +209,7 @@ El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/
 
 `users.age` no existe: la edad se calcula en las respuestas privadas. Los objetos de R2 están asociados a una operación y a un usuario; ninguna foto se considera persistida solamente por estar en memoria o en `localStorage`.
 
-Registro, login, logout, sesión, perfil propio y consulta docente individual están implementados; la edición propia con control de versión también está disponible; foto y listado paginado siguen pendientes. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
+Registro, login/logout, sesión, perfil editable, fotos privadas y consulta docente individual están implementados. El listado paginado sigue pendiente. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
 
 | Método y ruta | Contrato |
 |---|---|
@@ -251,11 +251,11 @@ El objetivo es entregar este flujo funcional durante la jornada. La integridad d
 - [x] La edad es correcta antes y después del cumpleaños, al cambiar de año y para nacimientos del 29 de febrero.
 - [ ] Nombres, apellidos y fecha corregidos persisten; las versiones evitan sobrescrituras concurrentes.
 - [ ] Ranking e intercambios no exponen ID de SENATI, nombres legales, fecha de nacimiento ni edad.
-- [ ] La cuenta y el inicial funcionan sin foto o si la carga falla.
-- [ ] La foto se recupera después de cerrar sesión, reiniciar el navegador o entrar desde otro dispositivo.
-- [ ] Cargas inválidas se rechazan; un alumno no puede modificar la foto de otro.
-- [ ] Sustituir o eliminar una foto actualiza el perfil; las tareas de limpieza no eliminan archivos vigentes.
-- [ ] Un fallo entre R2 y D1 y un reintento de carga no dejan una referencia rota ni varias operaciones confirmadas.
+- [x] La cuenta y el inicial funcionan sin foto o si la carga falla.
+- [x] La foto se recupera después de cerrar sesión, reiniciar el navegador o entrar desde otro dispositivo.
+- [x] Cargas inválidas se rechazan; un alumno no puede modificar la foto de otro.
+- [x] Sustituir o eliminar una foto actualiza el perfil; las tareas de limpieza no eliminan archivos vigentes.
+- [x] Un fallo entre R2 y D1 y un reintento de carga no dejan una referencia rota ni varias operaciones confirmadas.
 - [ ] Inicial y PokéDrops comparten probabilidades: Mewtwo 0,1 %, Mew 0,1 % y otras 149 especies 99,8 % en conjunto.
 - [ ] Casos controlados verifican las tres ramas del sorteo y permiten Mew y Mewtwo repetidos sin exigir su aparición en una muestra aleatoria.
 
@@ -335,7 +335,7 @@ La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classr
 
 Para publicar desde otra máquina, iniciar sesión con `npx wrangler login`, verificar la cuenta con `npx wrangler whoami` y ejecutar `npm run deploy`. La integración continua valida las PR; todavía no publica automáticamente ni requiere secretos de Cloudflare en GitHub.
 
-No se incluyen credenciales ni secretos en Git. `.local/`, `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1 está configurado con el binding `DB` y bases separadas para producción y pruebas. Validar migraciones localmente y en pruebas antes de aplicarlas a producción; `deploy` no las aplica automáticamente. Las pruebas de Vitest usan otra base temporal y no requieren acceso a tus bases remotas. R2 y los servicios del juego siguen pendientes.
+No se incluyen credenciales ni secretos en Git. `.local/`, `.env*`, `.dev.vars*`, `.wrangler/`, `dist/` y dependencias están excluidos. Esta base no requiere variables secretas. D1 está configurado con el binding `DB` y bases separadas para producción y pruebas. Validar migraciones localmente y en pruebas antes de aplicarlas a producción; `deploy` no las aplica automáticamente. Las pruebas de Vitest usan otra base temporal y no requieren acceso a tus bases remotas. R2 está configurado con buckets privados separados y limpieza programada; los servicios del juego siguen pendientes.
 
 Referencia: [React y Vite en Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/react/).
 

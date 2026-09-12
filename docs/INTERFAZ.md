@@ -9,7 +9,7 @@ La tarea #6 incorpora la base visual de PokéSwap: React Router en modo declarat
 | `/`                                                  | Inicio con catálogo, reglas y acceso a la cuenta.              |
 | `/pokedex`                                           | Catálogo público, búsqueda, filtros y fichas.                  |
 | `/registro`, `/ingresar`                             | Formularios conectados a API y confirmación de sesión.         |
-| `/perfil`                                            | Datos propios y edición con versión; foto pendiente.           |
+| `/perfil`                                            | Datos propios y edición con versión; foto privada con recorte. |
 | `/coleccion`                                         | Entrega inicial real del alumno; colección completa pendiente. |
 | `/intercambios`, `/ranking`                          | Sesión requerida y mensaje de disponibilidad.                  |
 | `/docente`, `/docente/alumnos`, `/docente/pokedrops` | Sesión y rol docente requeridos; gestión completa pendiente.   |
