@@ -41,6 +41,30 @@ async function mockSession(
         : { status: 401, json: { code: 'UNAUTHENTICATED' } },
     ),
   );
+  await page.route('**/api/me/collection', (route) => {
+    if (!current?.initial)
+      return route.fulfill({ status: 401, json: { code: 'UNAUTHENTICATED' } });
+    return route.fulfill({
+      json: {
+        userId: current.user.id,
+        goal: 150,
+        obtained: current.initial.speciesId <= 150 ? 1 : 0,
+        total: 1,
+        reserved: 0,
+        available: 0,
+        nextRefreshAt: null,
+        species: [
+          {
+            speciesId: current.initial.speciesId,
+            total: 1,
+            protected: 1,
+            reserved: 0,
+            available: 0,
+          },
+        ],
+      },
+    });
+  });
   return {
     set: (value: AuthenticatedProfile | null) => {
       current = value;

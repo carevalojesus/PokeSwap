@@ -5,7 +5,6 @@ import { Link } from 'react-router';
 import catalog from '../../../shared/catalog/species.json';
 import { useSession } from './session-context';
 import { PageHeading } from '../../components/page-heading';
-import { PageState } from '../../components/page-state';
 import { Button } from '../../components/ui/button';
 import { PokemonImage } from '../pokedex/pokemon-card';
 import { speciesName } from '../pokedex/species-name';
@@ -94,11 +93,9 @@ export function InitialPage() {
   const species = catalog[profile.initial.speciesId - 1];
   return (
     <div className="flex flex-col gap-8">
-      <PageHeading
-        eyebrow="Tu cuenta está lista"
-        title="Tu primer compañero"
-        description={`¡Bienvenido, ${profile.user.trainerName}! Este es el Pokémon inicial guardado en tu cuenta.`}
-      />
+      <h2 className="text-2xl font-semibold tracking-tight text-balance">
+        Tu primer compañero
+      </h2>
       <section
         aria-label="Pokémon inicial confirmado"
         className="grid items-center gap-6 rounded-2xl border border-zinc-950/10 p-6 sm:grid-cols-2"
@@ -122,15 +119,6 @@ export function InitialPage() {
           </Button>
         </div>
       </section>
-      <PageState
-        title="La colección completa llegará pronto"
-        description="Aquí podrás consultar todos tus ejemplares y repetidos cuando se habiliten la colección y los PokéDrops. Por ahora mostramos la entrega inicial confirmada."
-        action={
-          <Button asChild variant="outline">
-            <Link to="/pokedex">Explorar Pokédex</Link>
-          </Button>
-        }
-      />
     </div>
   );
 }

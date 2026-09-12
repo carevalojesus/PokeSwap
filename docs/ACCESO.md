@@ -7,7 +7,7 @@ La tarea #7 conecta los formularios React con la API Hono/D1 de #5. Las consulta
 - `/registro`: cuenta de alumno con ID SENATI, nombres, apellidos, nacimiento y contraseña. No envía rol, alias ni especie elegida por el cliente.
 - `/ingresar`: acceso común de alumno y docente con ID y contraseña. El rol confirmado determina el destino: `/coleccion` o `/docente`.
 - `/perfil`: consulta de los datos propios devueltos por la API, incluida la edad calculada en Lima. La edición con control de versión está implementada en #8; ver [perfil editable](PERFIL.md). La foto está implementada en #9; ver [fotos privadas](FOTOS.md).
-- `/coleccion`: muestra exclusivamente la entrega inicial persistida del alumno. No calcula ni inventa progreso, duplicados o colección completa; esa función sigue en #10.
+- `/coleccion`: muestra la colección persistida del alumno, cantidades agrupadas, duplicados, reservas y progreso sobre 150. Conserva la entrega inicial como referencia; ver [colección](COLECCION.md).
 - `/docente/*`: exige rol docente antes de mostrar la estructura de #6. El panel completo y listado de alumnos siguen en #16.
 - Ranking e intercambios requieren sesión y mantienen el mensaje de disponibilidad hasta implementar sus servicios.
 

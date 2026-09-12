@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección completa y los PokéDrops siguen pendientes. Las fotos privadas con recorte y R2 están implementadas; ver [fotos y recuperación](docs/FOTOS.md). Las funciones del juego y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección agrupada, los duplicados y el progreso sobre 150 especies están implementados; ver [colección](docs/COLECCION.md). Los PokéDrops siguen pendientes. Las fotos privadas con recorte y R2 están implementadas; ver [fotos y recuperación](docs/FOTOS.md). Las funciones del juego y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -14,7 +14,7 @@ Repositorio: [carevalojesus/PokeSwap](https://github.com/carevalojesus/PokeSwap)
 
 ## Interfaz disponible
 
-Explora el [catálogo público](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/pokedex), busca especies por nombre o número y consulta las reglas. Puedes [crear tu cuenta de alumno](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/registro) o [ingresar](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/ingresar) con tu ID y contraseña. Alumnos y docente comparten el formulario de acceso. El perfil propio y el inicial son reales; colección completa, ranking y gestión docente siguen en sus issues. Ver [sesión y formularios](docs/ACCESO.md) y [perfil editable](docs/PERFIL.md).
+Explora el [catálogo público](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/pokedex), busca especies por nombre o número y consulta las reglas. Puedes [crear tu cuenta de alumno](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/registro) o [ingresar](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/ingresar) con tu ID y contraseña. Alumnos y docente comparten el formulario de acceso. El perfil propio, el inicial y la colección son reales; ranking y gestión docente siguen en sus issues. Ver [sesión y formularios](docs/ACCESO.md) y [perfil editable](docs/PERFIL.md).
 
 Ver [componentes, rutas y pruebas de navegador](docs/INTERFAZ.md). Tras `npm run build`, ejecuta `npx playwright install chromium webkit` y `npm run test:ui` para comprobar la interfaz.
 
@@ -209,7 +209,7 @@ El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/
 
 `users.age` no existe: la edad se calcula en las respuestas privadas. Los objetos de R2 están asociados a una operación y a un usuario; ninguna foto se considera persistida solamente por estar en memoria o en `localStorage`.
 
-Registro, login/logout, sesión, perfil editable, fotos privadas y consulta docente individual están implementados. El listado paginado sigue pendiente. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
+Registro, login/logout, sesión, perfil editable, fotos privadas, colección propia y consulta docente individual están implementados. El listado paginado sigue pendiente. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
 
 | Método y ruta | Contrato |
 |---|---|
@@ -217,6 +217,7 @@ Registro, login/logout, sesión, perfil editable, fotos privadas y consulta doce
 | `POST /api/auth/login` | Recibe `senatiId` y `password`; recupera la misma cuenta y colección. |
 | `POST /api/auth/logout` | Revoca la sesión actual. |
 | `GET /api/auth/session` | Devuelve ID interno, rol y vencimiento de la sesión autenticada. |
+| `GET /api/me/collection` | Colección del alumno autenticado: cantidades agrupadas, protegidos, reservas activas, disponibles y progreso #001–#150; Mew adicional. |
 | `GET /api/me` | Devuelve perfil propio, edad calculada, alias, URL interna de foto y versión de perfil. Nunca devuelve el hash de contraseña. |
 | `PATCH /api/me/profile` | Guarda nombres, apellidos y fecha de nacimiento propios con validación y control de versión; no cambia ID de SENATI ni alias. |
 | `PUT /api/me/avatar` | Carga la imagen normalizada con clave de idempotencia y versión esperada; devuelve la referencia confirmada y nueva versión. Misma clave con otro archivo devuelve conflicto. |
@@ -329,7 +330,7 @@ Las pruebas de humo verifican inicio, colección, Pokédex, ruta docente, fallba
 
 ### Despliegue y credenciales
 
-**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable, Pokédex pública, registro/login, perfil e inicial persistentes. Los PokéDrops, intercambios y la colección completa siguen pendientes.
+**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable, Pokédex pública, registro/login, perfil e inicial persistentes. La colección incluye cantidades, reservas y progreso. Los PokéDrops e intercambios siguen pendientes.
 
 La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classroom`. Vite genera la configuración final del despliegue junto al build. Los scripts usan Wrangler instalado en el proyecto, sin depender de la versión global.
 
