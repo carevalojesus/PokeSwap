@@ -10,3 +10,6 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 worker-configuration.d.ts
+
+# Local operator inputs and generated credentials
+.local/

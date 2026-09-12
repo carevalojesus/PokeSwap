@@ -2,7 +2,7 @@
 
 La tarea #4 implementa el servicio `createRegistrationService(DB)` en `src/server/registration/register.ts`. Su función `register(input)` guarda cuenta, alias, inicial e historial y devuelve únicamente el ID interno, el alias y los identificadores del inicial confirmado.
 
-Esta entrega es la capa de dominio y persistencia. El adaptador HTTP, la creación de sesión tras registrarse, login/logout, recuperación autenticada y permisos pertenecen a #5; el formulario pertenece a #7. Todavía no se ofrece un endpoint público de registro ni recuperación. La foto opcional se incorporará mediante el flujo de medios de #9, después de confirmar la cuenta.
+La capa de dominio y persistencia de #4 está conectada al adaptador HTTP, sesiones, login/logout y recuperación autenticada implementados en #5; ver [autenticación](AUTENTICACION.md). El formulario pertenece a #7. La foto opcional se incorporará mediante el flujo de medios de #9, después de confirmar la cuenta.
 
 ## Validación y normalización
 
@@ -13,7 +13,7 @@ Se admiten exclusivamente `senatiId`, `firstNames`, `lastNames`, `birthDate` y `
 - Nacimiento: calendario `YYYY-MM-DD`, con validación de días y años bisiestos gregorianos; no admite fechas futuras según el día de `America/Lima`. No almacena edad ni usa la fecha para el premio.
 - Contraseña: de 15 a 128 caracteres Unicode, sin controles ni sustitutos Unicode aislados, máximo 1024 bytes UTF-8. Conserva exactamente espacios y Unicode: no se recorta, normaliza ni trunca. La longitud mínima sigue el criterio para autenticación sin MFA de [OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
 
-El servicio limita el trabajo de normalización. El adaptador HTTP de #5 deberá limitar también el cuerpo antes de leer JSON y aplicar protección de origen/CSRF, errores públicos controlados y límites de intentos.
+El servicio limita el trabajo de normalización. El adaptador HTTP de #5 limita el cuerpo antes de leer JSON y aplica protección de origen/CSRF, errores públicos controlados y límites de intentos.
 
 ## Contraseñas compatibles con Workers
 
@@ -42,7 +42,7 @@ El único `DB.batch()` contiene, en orden:
 
 Son inserciones obligatorias: cada sentencia inserta una fila o falla. No hay `OR IGNORE`, `ON CONFLICT DO NOTHING` ni actualizaciones de cero filas que pudieran confirmar un lote incompleto. Un fallo en cualquiera de ellas revierte todo el lote. No se usan transacciones interactivas del ORM.
 
-Un registro repetido, incluso con la contraseña correcta, devuelve `RegistrationConflict` y no entrega el perfil ni el inicial existente. No reemplaza contraseña, nombres, alias ni colección. Si se pierde una respuesta confirmada, #5 deberá autenticar al alumno y consultar sus resultados persistidos; no ejecutar otro registro para recuperarlos. Los errores de almacenamiento inesperados se propagan para que el adaptador los traduzca sin exponer SQL ni detalles privados.
+Un registro repetido, incluso con la contraseña correcta, devuelve `RegistrationConflict` y no entrega el perfil ni el inicial existente. No reemplaza contraseña, nombres, alias ni colección. Si se pierde una respuesta confirmada, el login de #5 autentica al alumno y consulta sus resultados persistidos; no ejecutar otro registro para recuperarlos. Los errores de almacenamiento inesperados se propagan para que el adaptador los traduzca sin exponer SQL ni detalles privados.
 
 ## Pruebas
 

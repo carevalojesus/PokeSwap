@@ -2,7 +2,7 @@
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
-**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las funciones del juego y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
+**Estado:** arquitectura acordada para el MVP el 11 de septiembre de 2026. La base React/Vite/TypeScript y el Worker Hono están implementados en la issue #1; el esquema D1, sus migraciones y pruebas de integridad se incorporan en #2. Las issues #3–#5 añaden catálogo, sorteo, registro y autenticación. Las pantallas, PokéDrops, intercambios y R2 siguen pendientes. Consultar el [README](README.md#documentación-y-ejecución) para comandos y alcance actual.
 
 El [README](README.md) define las reglas del producto, perfiles, probabilidades y contratos previstos. Este documento establece cómo implementarlos y cómo añadir una experiencia visual y sonora coherente. Las bibliotecas de la base están fijadas en `package.json` y `package-lock.json`. Las restantes se incorporarán al implementar sus respectivas issues; figurar en esta arquitectura no implica estar instaladas.
 
@@ -183,7 +183,7 @@ Las tareas de limpieza no sustituyen la validación del vencimiento en cada soli
 
 El ingreso usa ID SENATI y contraseña. La sesión se representa mediante un token aleatorio en cookie `HttpOnly`, `Secure` y `SameSite`, con hash, vencimiento y revocación en D1. Las mutaciones llevan protección CSRF y el servidor comprueba el rol y la propiedad del recurso en cada operación. La cuenta docente se provisiona fuera del registro público.
 
-La tarea #4 implementa el registro atómico y selecciona scrypt nativo de `node:crypto` con `nodejs_compat` (N=16384, r=8, p=5), verificado en Workers local y remoto; ver [registro](docs/REGISTRO.md). El módulo de sesiones, los endpoints de autenticación y el acceso mediante ID SENATI se integrarán en #5. No se almacenarán contraseñas en claro ni tokens de sesión en `localStorage`.
+La tarea #4 implementa el registro atómico y selecciona scrypt nativo de `node:crypto` con `nodejs_compat` (N=16384, r=8, p=5), verificado en Workers local y remoto; ver [registro](docs/REGISTRO.md). La tarea #5 incorpora sesiones opacas con Hono/D1, endpoints de registro y acceso por ID SENATI, origen estricto, límites y provisión docente por CLI; ver [autenticación](docs/AUTENTICACION.md). No se almacenarán contraseñas en claro ni tokens de sesión en `localStorage`.
 
 Los datos personales solo se exponen al propio alumno y al docente autorizado. Ranking e intercambios muestran alias y foto. Los errores y registros operativos deben permitir investigar fallos sin registrar contraseñas, tokens ni contenido privado innecesario.
 
@@ -230,7 +230,7 @@ El alcance completo es exigente para una jornada. La integridad del juego y la p
 ## Decisiones pendientes de implementación
 
 - Incorporar las dependencias de las funciones restantes. Las issues #1 y #2 fijan la base, Drizzle, el esquema D1 y los comandos de migración; ver [modelo de datos](docs/DATOS.md).
-- Integrar el módulo de sesiones y endpoints de autenticación sobre el registro y el hash scrypt verificados en #4.
+- Conectar las pantallas de acceso con la API de autenticación implementada en #5 y medir capacidad con la clase.
 - Implementar la aceptación completa de intercambios sobre el esquema de reservas y el patrón de aserciones D1 probado en #2. Las pruebas de almacenamiento no sustituyen la validación del servicio de #14.
 - Seleccionar y verificar la validación del contenido WebP en el Worker.
 - Medir capacidad para la clase y comprobar cámara, audio y PWA en los dispositivos previstos.

@@ -1,7 +1,15 @@
 import { Hono } from 'hono';
+import authRoutes from './auth/routes';
+import {
+  type AuthEnv,
+  requireSession,
+  requireTeacher,
+  sameOriginMutation,
+} from './auth/middleware';
+import { getPrivateProfile } from './auth/profile';
 import type { HealthResponse } from '../shared/contracts/health';
 
-const app = new Hono();
+const app = new Hono<AuthEnv>();
 
 app.use('*', async (context, next) => {
   context.header('Cache-Control', 'no-store');
@@ -15,6 +23,24 @@ app.get('/api/health', (context) => {
     service: 'pokeswap-classroom',
   };
   return context.json(health);
+});
+
+app.use('/api/*', sameOriginMutation);
+app.route('/api/auth', authRoutes);
+app.use('/api/me/*', requireSession);
+app.use('/api/admin/*', requireSession, requireTeacher);
+app.get('/api/me', async (c) => {
+  const profile = await getPrivateProfile(c.env.DB, c.get('identity').userId);
+  if (!profile) return c.json({ error: 'Perfil no encontrado.' }, 404);
+  return c.json({
+    ...profile,
+    session: { expiresAt: c.get('identity').expiresAt },
+  });
+});
+app.get('/api/admin/users/:id', async (c) => {
+  const profile = await getPrivateProfile(c.env.DB, c.req.param('id'));
+  if (!profile) return c.json({ error: 'Perfil no encontrado.' }, 404);
+  return c.json(profile);
 });
 
 app.notFound((context) => context.json({ error: 'Ruta no encontrada.' }, 404));

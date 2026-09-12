@@ -5,6 +5,18 @@
   "compatibility_date": "2026-09-11",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "ratelimits": [
+    {
+      "name": "AUTH_IP_LIMITER",
+      "namespace_id": "6515001",
+      "simple": { "limit": 120, "period": 60 },
+    },
+    {
+      "name": "AUTH_ACCOUNT_LIMITER",
+      "namespace_id": "6515002",
+      "simple": { "limit": 8, "period": 60 },
+    },
+  ],
   "d1_databases": [
     {
       "binding": "DB",
@@ -15,6 +27,18 @@
   ],
   "env": {
     "test": {
+      "ratelimits": [
+        {
+          "name": "AUTH_IP_LIMITER",
+          "namespace_id": "6515011",
+          "simple": { "limit": 120, "period": 60 },
+        },
+        {
+          "name": "AUTH_ACCOUNT_LIMITER",
+          "namespace_id": "6515012",
+          "simple": { "limit": 8, "period": 60 },
+        },
+      ],
       "d1_databases": [
         {
           "binding": "DB",
