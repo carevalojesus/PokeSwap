@@ -4,12 +4,12 @@ La tarea #6 incorpora la base visual de PokéSwap: React Router en modo declarat
 
 ## Rutas y alcance
 
-| Ruta                                                 | Estado actual (#7)                                             |
+| Ruta                                                 | Estado actual (#8)                                             |
 | ---------------------------------------------------- | -------------------------------------------------------------- |
 | `/`                                                  | Inicio con catálogo, reglas y acceso a la cuenta.              |
 | `/pokedex`                                           | Catálogo público, búsqueda, filtros y fichas.                  |
 | `/registro`, `/ingresar`                             | Formularios conectados a API y confirmación de sesión.         |
-| `/perfil`                                            | Datos propios autenticados; edición/foto pendientes.           |
+| `/perfil`                                            | Datos propios y edición con versión; foto pendiente.           |
 | `/coleccion`                                         | Entrega inicial real del alumno; colección completa pendiente. |
 | `/intercambios`, `/ranking`                          | Sesión requerida y mensaje de disponibilidad.                  |
 | `/docente`, `/docente/alumnos`, `/docente/pokedrops` | Sesión y rol docente requeridos; gestión completa pendiente.   |
@@ -57,3 +57,5 @@ npm run smoke -- https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev
 ```
 
 La CI instala los navegadores y ejecuta los recorridos después de `check`. Las trazas de fallos y capturas locales están en `test-results/`, excluidas de Git.
+
+La edición propia y recuperación de conflictos de #8 están descritas en [perfil editable](PERFIL.md).

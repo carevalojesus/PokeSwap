@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, Navigate, Outlet, useNavigate } from 'react-router';
-import { useSession } from './session-context';
+import { SessionContext, useSession } from './session-context';
 import { PageHeading } from '../../components/page-heading';
 import { PageState } from '../../components/page-state';
 import { Button } from '../../components/ui/button';
@@ -62,10 +62,14 @@ export function SessionGate({ children }: { children: ReactNode }) {
 }
 export function RequireSession({ role }: { role?: 'teacher' | 'student' }) {
   const session = useSession();
-  if (session.loading || session.action !== 'idle') return <SessionLoading />;
-  if (session.failed) return <SessionProblem />;
-  if (!session.profile) return <Navigate to="/ingresar" replace />;
-  if (role && session.profile.user.role !== role)
+  const retained = session.profile ?? session.retainedProfile;
+  const checking = session.loading || session.action !== 'idle';
+  if (!retained) {
+    if (checking) return <SessionLoading />;
+    if (session.failed) return <SessionProblem />;
+    return <Navigate to="/ingresar" replace />;
+  }
+  if (role && retained.user.role !== role)
     return (
       <div className="flex flex-col gap-6">
         <PageHeading
@@ -85,7 +89,19 @@ export function RequireSession({ role }: { role?: 'teacher' | 'student' }) {
         />
       </div>
     );
-  return <Outlet />;
+  // Keep drafts in memory during a background check, but hide all private UI.
+  // A confirmed 401, account change or logout removes the retained profile.
+  return (
+    <>
+      {checking && <SessionLoading />}
+      {!checking && session.failed && <SessionProblem />}
+      <div hidden={checking || session.failed}>
+        <SessionContext.Provider value={{ ...session, profile: retained }}>
+          <Outlet key={retained.user.id} />
+        </SessionContext.Provider>
+      </div>
+    </>
+  );
 }
 export function AnonymousOnly() {
   const session = useSession();

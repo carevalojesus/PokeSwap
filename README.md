@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. Se muestra el perfil propio y la entrega inicial confirmada; la colección completa y los PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección completa y los PokéDrops siguen pendientes. Las funciones del juego, R2 y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -14,7 +14,7 @@ Repositorio: [carevalojesus/PokeSwap](https://github.com/carevalojesus/PokeSwap)
 
 ## Interfaz disponible
 
-Explora el [catálogo público](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/pokedex), busca especies por nombre o número y consulta las reglas. Puedes [crear tu cuenta de alumno](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/registro) o [ingresar](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/ingresar) con tu ID y contraseña. Alumnos y docente comparten el formulario de acceso. El perfil propio y el inicial son reales; colección completa, ranking y gestión docente siguen en sus issues. Ver [sesión y formularios](docs/ACCESO.md).
+Explora el [catálogo público](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/pokedex), busca especies por nombre o número y consulta las reglas. Puedes [crear tu cuenta de alumno](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/registro) o [ingresar](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/ingresar) con tu ID y contraseña. Alumnos y docente comparten el formulario de acceso. El perfil propio y el inicial son reales; colección completa, ranking y gestión docente siguen en sus issues. Ver [sesión y formularios](docs/ACCESO.md) y [perfil editable](docs/PERFIL.md).
 
 Ver [componentes, rutas y pruebas de navegador](docs/INTERFAZ.md). Tras `npm run build`, ejecuta `npx playwright install chromium webkit` y `npm run test:ui` para comprobar la interfaz.
 
@@ -209,7 +209,7 @@ El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/
 
 `users.age` no existe: la edad se calcula en las respuestas privadas. Los objetos de R2 están asociados a una operación y a un usuario; ninguna foto se considera persistida solamente por estar en memoria o en `localStorage`.
 
-Registro, login, logout, sesión, perfil propio y consulta docente individual están implementados; las modificaciones de perfil/foto y el listado paginado siguen pendientes. Ver [contratos y seguridad](docs/AUTENTICACION.md).
+Registro, login, logout, sesión, perfil propio y consulta docente individual están implementados; la edición propia con control de versión también está disponible; foto y listado paginado siguen pendientes. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
 
 | Método y ruta | Contrato |
 |---|---|
@@ -248,7 +248,7 @@ El objetivo es entregar este flujo funcional durante la jornada. La integridad d
 - [ ] El ID conserva ceros iniciales y una restricción única impide cuentas duplicadas incluso bajo concurrencia.
 - [ ] El alias se genera solo en el servidor, es único y permanece igual al recargar o cambiar de dispositivo.
 - [ ] Nombres compuestos y tildes se guardan sin alteraciones indebidas.
-- [ ] La edad es correcta antes y después del cumpleaños, al cambiar de año y para nacimientos del 29 de febrero.
+- [x] La edad es correcta antes y después del cumpleaños, al cambiar de año y para nacimientos del 29 de febrero.
 - [ ] Nombres, apellidos y fecha corregidos persisten; las versiones evitan sobrescrituras concurrentes.
 - [ ] Ranking e intercambios no exponen ID de SENATI, nombres legales, fecha de nacimiento ni edad.
 - [ ] La cuenta y el inicial funcionan sin foto o si la carga falla.
