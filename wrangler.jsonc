@@ -3,6 +3,7 @@
   "name": "pokeswap-classroom",
   "main": "src/server/index.ts",
   "compatibility_date": "2026-09-11",
+  "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "d1_databases": [
     {

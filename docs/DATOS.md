@@ -39,7 +39,7 @@ El origen y la versión de probabilidades del ejemplar se obtienen mediante `pok
 
 La base conserva ceros iniciales y rechaza IDs duplicados, alias normalizados duplicados, roles desconocidos y fechas de calendario inválidas. Los nombres legales pueden repetirse. La normalización Unicode completa, todos los caracteres de control, límites de entrada y rechazo de fechas futuras siguen siendo responsabilidad del servicio de registro/perfil. SQLite `upper()` no sustituye la normalización del servidor.
 
-La columna `password_hash` no fija todavía un algoritmo: debe contener el formato completo del hash con sal y parámetros que seleccione #4/#5. Los hashes de tokens de sesión y QR se guardan como 64 caracteres hexadecimales minúsculos. La aleatoriedad, distribución segura y la entrega de los tokens se implementarán con sus servicios; almacenar un hash no convierte un código débil en seguro.
+La columna `password_hash` guarda el formato completo scrypt con sal y parámetros seleccionado en #4; ver [registro](REGISTRO.md). Los hashes de tokens de sesión y QR se guardan como 64 caracteres hexadecimales minúsculos. La aleatoriedad, distribución segura y la entrega de los tokens se implementarán con sus servicios; almacenar un hash no convierte un código débil en seguro.
 
 ### Premios y ejemplares
 
