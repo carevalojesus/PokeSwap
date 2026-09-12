@@ -155,7 +155,13 @@ function FieldsForm({
   );
 }
 
-export function AuthPage({ kind }: { kind: 'login' | 'register' }) {
+export function AuthPage({
+  kind,
+  dropEntry = false,
+}: {
+  kind: 'login' | 'register';
+  dropEntry?: boolean;
+}) {
   const isRegistration = kind === 'register';
   const session = useSession();
   const navigate = useNavigate();
@@ -203,9 +209,16 @@ export function AuthPage({ kind }: { kind: 'login' | 'register' }) {
         : { senatiId: values.senatiId, password: values.password };
       const profile = await session.signIn(kind, input);
       form.reset();
-      navigate(profile.user.role === 'teacher' ? '/docente' : '/coleccion', {
-        replace: true,
-      });
+      navigate(
+        dropEntry
+          ? '/pokedrop'
+          : profile.user.role === 'teacher'
+            ? '/docente'
+            : '/coleccion',
+        {
+          replace: true,
+        },
+      );
     } catch (failure) {
       if (failure instanceof ApiError && failure.retryAfter)
         setCooldown(failure.retryAfter);
@@ -251,7 +264,7 @@ export function AuthPage({ kind }: { kind: 'login' | 'register' }) {
               <p className="text-base text-pretty text-red-900">{error}</p>
               {isRegistration && (
                 <Link
-                  to="/ingresar"
+                  to={dropEntry ? '/pokedrop' : '/ingresar'}
                   className="rounded-sm font-medium text-red-900 underline underline-offset-4"
                 >
                   Ir a iniciar sesión
@@ -281,7 +294,15 @@ export function AuthPage({ kind }: { kind: 'login' | 'register' }) {
           <p className="text-base text-zinc-600 sm:text-sm">
             {isRegistration ? '¿Ya tienes una cuenta?' : '¿Es tu primera vez?'}{' '}
             <Link
-              to={isRegistration ? '/ingresar' : '/registro'}
+              to={
+                dropEntry
+                  ? isRegistration
+                    ? '/pokedrop'
+                    : '/pokedrop?registro'
+                  : isRegistration
+                    ? '/ingresar'
+                    : '/registro'
+              }
               className="rounded-sm font-medium text-rose-700 underline underline-offset-4"
             >
               {isRegistration ? 'Inicia sesión' : 'Crea tu cuenta de alumno'}

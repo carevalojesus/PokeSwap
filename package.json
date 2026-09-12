@@ -48,6 +48,8 @@
     "drizzle-orm": "0.45.2",
     "hono": "4.13.7",
     "lucide-react": "1.45.0",
+    "qr-scanner": "1.4.2",
+    "qrcode.react": "4.2.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-easy-crop": "6.2.3",

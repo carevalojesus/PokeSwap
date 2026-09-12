@@ -7,6 +7,7 @@ import {
 import { AuthPage } from '../features/auth/auth-page';
 import { AccountPage } from '../features/auth/account-page';
 import { TeacherDropsPage } from '../features/drops/teacher-drops-page';
+import { DropEntryPage } from '../features/drops/drop-entry-page';
 import { StudentDropsPage } from '../features/drops/student-drops-page';
 import { CollectionPage } from '../features/collection/collection-page';
 import { AppLayout } from './layout';
@@ -21,6 +22,7 @@ export function App() {
         <Routes>
           <Route element={<AppLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="pokedrop" element={<DropEntryPage />} />
             <Route path="pokedex" element={<PokedexPage />} />
             <Route element={<AnonymousOnly />}>
               <Route

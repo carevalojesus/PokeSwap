@@ -1,10 +1,10 @@
 # PokéDrops y canje único
 
-Implementado en #11. El docente crea, consulta y cancela sus entregas en `/docente/pokedrops`; los alumnos consultan y canjean un código en `/pokedrops`. El QR, la cámara y los enlaces de entrada continúan en #12. No se añaden migraciones ni dependencias.
+Implementado en #11. El docente crea, consulta y cancela sus entregas en `/docente/pokedrops`; los alumnos consultan y canjean un código en `/pokedrops`. La #12 añade QR y enlace compartibles y cámara bajo demanda. No se añaden migraciones; se fijan qrcode.react 4.2.0 y qr-scanner 1.4.2.
 
 ## Contratos
 
-Todas las rutas requieren sesión, son `no-store` y verifican el rol. Las mutaciones y consultas por código usan JSON con límite de 8 KiB y origen del mismo sitio. Los códigos viajan en el cuerpo, nunca en rutas, parámetros de consulta o almacenamiento persistente del navegador.
+Todas las rutas requieren sesión, son `no-store` y verifican el rol. Las mutaciones y consultas por código usan JSON con límite de 8 KiB y origen del mismo sitio. Los códigos viajan hacia la API en el cuerpo, nunca en rutas o parámetros de consulta. Los enlaces compartidos usan un fragmento, que no se envía por HTTP ni en Referer. Al abrirlo se elimina de la entrada actual del historial y se conserva en memoria, sin localStorage/sessionStorage. Esto no elimina copias previas del enlace en aplicaciones de mensajería o historiales externos.
 
 | Ruta                               | Comportamiento                                                                                                                                     |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -39,6 +39,18 @@ No regenerar la clave en cada despliegue. Cambiarla mantiene válidos los códig
 
 Pruebas D1: creación simultánea, mismo código tras reintento, huella almacenada, consulta sin premio, cuatro ejemplares con inicial, canjes simultáneos, dos alumnos, Mew/Mewtwo/repetidos, respuesta perdida, rollback por fallo de posición, cancelación durante el canje, vencimiento y permisos/origen/entrada.
 
-Playwright cubre creación y recuperación, cancelación confirmada, consulta antes de canjear, respuesta perdida, recarga, actualización de colección, estados inactivos, contrato inválido y cierre durante un canje. Revisión móvil en Chromium/WebKit emulados y escritorio; teléfonos reales siguen en #20.
+Playwright cubre creación y recuperación, cancelación confirmada, consulta antes de canjear, respuesta perdida, recarga, actualización de colección, estados inactivos, contrato inválido y cierre durante un canje. Revisión móvil en Chromium/WebKit emulados y escritorio; el 12/09/2026 el usuario confirmó «todo ok» tras la prueba solicitada en teléfono físico: denegación con alternativa utilizable y apagado al cerrar/salir. No informó modelo ni navegador; esta evidencia es una confirmación del usuario, no una prueba física ejecutada por el agente.
 
 `npm run smoke:drops:ui -- https://pokeswap-drops-ui-XXXXXXXX.christian-ar-valo-jes-s.workers.dev <credenciales-docente-test.json> chromium` comprueba por HTTPS un docente y dos alumnos ficticios, canjes concurrentes, colección de cuatro ejemplares, cancelación y recuperación. Admite `webkit`; rechaza producción y credenciales docentes ajenas al entorno de pruebas. El Worker temporal debe usar únicamente D1/R2 y clave de pruebas; eliminarlo después de validar. No crea premios de prueba en producción.
+
+## QR, enlaces y cámara (#12)
+
+El docente obtiene el QR y el enlace en el detalle de una entrega activa. El QR SVG incluye margen de cuatro módulos y corrección M; se genera localmente, sin servicios externos. Su vencimiento es el de la entrega, verificado en D1. Cancelar o vencer oculta las opciones de compartir; un enlace ya copiado sigue consultando el estado real sin permitir nuevos canjes.
+
+`/pokedrop#<código>` permite entrar o registrar una cuenta de alumno sin perder el código durante la navegación del formulario. Consultar sigue siendo una acción explícita. Recargar después de limpiar el fragmento requiere abrir de nuevo el enlace original o pegar el código. Un docente no puede canjear. Un QR ajeno, una ruta de intercambio, parámetros extra o una URL con credenciales se rechazan sin navegar ni llamar a la API.
+
+La cámara trasera se solicita solo al pulsar **Escanear QR**; no se enumera ni activa al cargar. El escáner y su motor se cargan en chunks separados. Al reconocer un código válido, detener/cerrar, consultar, salir, ocultar la pestaña o verificar/cambiar sesión se liberan pistas y motor. Un permiso tardío también libera su stream. Tras una denegación se informa cómo continuar por enlace/código o volver a habilitar el permiso. No se envían fotogramas al servidor.
+
+`tests/ui/qr.spec.ts` decodifica el QR realmente renderizado con el motor compilado, verifica login/registro con enlace, ausencia de tokens en HTTP/almacenamiento, consultas sin premios y denegación simulada en Chromium/WebKit. Los streams de Canvas en Chromium verifican lectura y liberación de pistas, incluida concesión tardía. Esos casos de Canvas se omiten expresamente en WebKit; no equivalen a usar una cámara física.
+
+Protocolo físico solicitado y confirmado por el usuario el 12/09/2026: desde el Worker HTTPS de pruebas, crear una cuenta ficticia, abrir PokéDrops, pulsar Escanear QR y denegar permiso; comprobar el aviso y el formulario utilizable. Después permitir la cámara y comprobar que su indicador se apaga al cerrar el escáner o salir. Resultado informado: «todo ok». Modelo y navegador no especificados. No se atribuye a esta confirmación una lectura óptica física del QR, que sí se verifica con streams sintéticos y decodificación del PNG renderizado.

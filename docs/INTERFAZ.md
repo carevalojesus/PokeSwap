@@ -61,3 +61,5 @@ npm run smoke -- https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev
 La CI instala los navegadores y ejecuta los recorridos después de `check`. Las trazas de fallos y capturas locales están en `test-results/`, excluidas de Git.
 
 La edición propia y recuperación de conflictos de #8 están descritas en [perfil editable](PERFIL.md).
+
+La #12 añade la entrada pública `/pokedrop#<código>` con autenticación previa a la consulta, QR/enlace en el detalle docente y escáner bajo demanda en PokéDrops. Leer el QR solo rellena el formulario; el canje conserva su botón de confirmación.
