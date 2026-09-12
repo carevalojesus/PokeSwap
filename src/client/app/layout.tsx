@@ -17,6 +17,9 @@ import {
 } from '../components/ui/dialog';
 import { RulesDialog } from '../components/rules-dialog';
 import { cn } from '../lib/utils';
+import { SessionControls } from '../features/auth/session-controls';
+import { SessionGate } from '../features/auth/session-boundary';
+import { useSession } from '../features/auth/session-context';
 
 function Navigation({
   teacher,
@@ -58,21 +61,27 @@ function Navigation({
 
 export function AppLayout() {
   const { pathname } = useLocation();
+  const session = useSession();
   const teacher = pathname === '/docente' || pathname.startsWith('/docente/');
   const previousPath = useRef(pathname);
+  const pendingFocus = useRef(false);
   useEffect(() => {
     const heading = document.querySelector('h1');
     document.title = `${heading?.textContent ?? 'Página no encontrada'} · PokéSwap Classroom`;
     if (previousPath.current !== pathname) {
+      previousPath.current = pathname;
+      pendingFocus.current = true;
+    }
+    if (pendingFocus.current && !session.loading) {
       // Let Radix finish closing its menu before placing focus in the new page.
       const timer = window.setTimeout(() => {
         heading?.focus({ preventScroll: true });
         window.scrollTo({ top: 0, behavior: 'instant' });
+        pendingFocus.current = false;
       }, 0);
-      previousPath.current = pathname;
       return () => window.clearTimeout(timer);
     }
-  }, [pathname]);
+  }, [pathname, session.loading, session.action, session.profile?.user.id]);
   return (
     <div className="isolate min-h-dvh">
       <a
@@ -97,9 +106,9 @@ export function AppLayout() {
             </p>
           </Link>
           <div className="flex items-center gap-4">
-            <p className="text-sm text-zinc-500 max-lg:hidden">
-              Colecciona. Intercambia. Conecta.
-            </p>
+            <div className="max-lg:hidden">
+              <SessionControls />
+            </div>
             <div className="max-lg:hidden">
               <RulesDialog />
             </div>
@@ -121,6 +130,7 @@ export function AppLayout() {
                     {teacher ? 'Espacio docente.' : 'Tu aventura en el aula.'}
                   </DialogDescription>
                   <Navigation teacher={teacher} mobileMenu />
+                  <SessionControls mobile />
                   <DialogClose asChild>
                     <Link
                       className="rounded-lg py-3 font-medium text-rose-700 underline underline-offset-4"
@@ -162,7 +172,9 @@ export function AppLayout() {
             tabIndex={-1}
             className="min-w-0 flex-1 px-5 py-8 outline-none sm:px-8 sm:py-10 lg:px-10 xl:px-14"
           >
-            <Outlet />
+            <SessionGate>
+              <Outlet />
+            </SessionGate>
           </main>
           <footer className="flex flex-wrap justify-between gap-3 border-t border-zinc-950/10 px-5 pt-5 pb-[calc(7rem+env(safe-area-inset-bottom))] text-base text-zinc-500 sm:px-8 sm:text-sm lg:px-10 lg:pb-5 xl:px-14">
             <p>Hecho para aprender y compartir.</p>

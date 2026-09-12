@@ -1,15 +1,13 @@
 import { Hono } from 'hono';
+import { z } from 'zod';
+import { loginSchema, registrationSchema } from '../../shared/schemas/auth';
 import { getCookie, setCookie } from 'hono/cookie';
 import {
   createRegistrationService,
   RegistrationConflict,
   TrainerNameUnavailable,
 } from '../registration/register';
-import {
-  InvalidRegistration,
-  normalizeSenatiId,
-  parseRegistration,
-} from '../registration/input';
+import { InvalidRegistration } from '../registration/input';
 import { verifyPassword } from './password';
 import {
   cookieOptions,
@@ -93,7 +91,7 @@ app.use('*', async (c, next) => {
 });
 
 app.post('/register', async (c) => {
-  const input = parseRegistration(await readJson(c.req.raw));
+  const input = registrationSchema.parse(await readJson(c.req.raw));
   if (
     !(
       await c.env.AUTH_ACCOUNT_LIMITER.limit({
@@ -144,25 +142,8 @@ app.post('/register', async (c) => {
 });
 
 app.post('/login', async (c) => {
-  const input = await readJson(c.req.raw);
-  if (!input || typeof input !== 'object' || Array.isArray(input))
-    throw new InvalidRegistration('body', 'Se requieren ID y contraseña.');
-  const body = input as Record<string, unknown>;
-  if (
-    Object.keys(body).some((key) => !['senatiId', 'password'].includes(key)) ||
-    typeof body.senatiId !== 'string' ||
-    body.senatiId.length > 1024 ||
-    typeof body.password !== 'string' ||
-    body.password.length > 1024 ||
-    /[\p{Cc}\p{Cs}]/u.test(body.password) ||
-    new TextEncoder().encode(body.password).length > 1024
-  ) {
-    throw new InvalidRegistration(
-      'body',
-      'Se requieren ID y contraseña válidos.',
-    );
-  }
-  const senatiId = normalizeSenatiId(body.senatiId);
+  const body = loginSchema.parse(await readJson(c.req.raw));
+  const senatiId = body.senatiId;
   if (
     !(
       await c.env.AUTH_ACCOUNT_LIMITER.limit({
@@ -235,6 +216,21 @@ app.get('/session', requireSession, (c) => {
 });
 
 app.onError((error, c) => {
+  if (error instanceof z.ZodError) {
+    const issue = error.issues[0];
+    const field = typeof issue?.path[0] === 'string' ? issue.path[0] : 'body';
+    return c.json(
+      {
+        error:
+          field === 'body'
+            ? 'Los datos contienen campos inválidos o no admitidos.'
+            : issue.message,
+        code: 'INVALID_INPUT',
+        field,
+      },
+      400,
+    );
+  }
   if (error instanceof InvalidRegistration)
     return c.json(
       { error: error.message, code: 'INVALID_INPUT', field: error.field },

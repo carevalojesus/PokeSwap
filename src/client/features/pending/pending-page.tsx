@@ -29,8 +29,8 @@ export function PendingPage({
         }
         description={
           teacher
-            ? 'La gestión de alumnos y PokéDrops estará disponible con acceso docente. Por ahora puedes explorar la Pokédex y conocer las reglas.'
-            : 'El acceso a tu cuenta y esta sección estarán disponibles próximamente. Mientras tanto, descubre las especies y las reglas del juego.'
+            ? 'Tu acceso docente está confirmado. La gestión de alumnos y PokéDrops estará disponible próximamente. Por ahora puedes consultar tu perfil y explorar la Pokédex.'
+            : 'Tu sesión está activa. Esta sección estará disponible próximamente. Mientras tanto, descubre las especies y las reglas del juego.'
         }
         action={
           <Button asChild>

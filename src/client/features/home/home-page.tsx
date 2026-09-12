@@ -4,6 +4,7 @@ import catalog from '../../../shared/catalog/species.json';
 import { Button } from '../../components/ui/button';
 import { RulesDialog } from '../../components/rules-dialog';
 import { PokemonCard } from '../pokedex/pokemon-card';
+import { useSession } from '../auth/session-context';
 
 const steps = [
   {
@@ -24,6 +25,7 @@ const steps = [
   },
 ];
 export function HomePage() {
+  const { profile } = useSession();
   return (
     <div className="flex flex-col gap-10 sm:gap-14">
       <section className="grid items-center gap-6 border-b border-zinc-950/10 pb-10 md:grid-cols-[3fr_2fr]">
@@ -44,16 +46,24 @@ export function HomePage() {
           </p>
           <div className="flex flex-wrap items-center gap-5 py-1">
             <Button asChild>
-              <Link to="/pokedex">
-                Explorar Pokédex
+              <Link
+                to={
+                  profile
+                    ? profile.user.role === 'teacher'
+                      ? '/docente'
+                      : '/coleccion'
+                    : '/registro'
+                }
+              >
+                {profile ? 'Ir a mi espacio' : 'Crear mi cuenta'}
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
             <RulesDialog />
           </div>
           <p className="max-w-[56ch] text-base text-zinc-500 sm:text-sm">
-            Ya puedes explorar el catálogo. El acceso a tu cuenta y el juego
-            estarán disponibles próximamente.
+            El registro y el acceso ya están disponibles. Los PokéDrops y los
+            intercambios llegarán próximamente.
           </p>
         </div>
         <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[2rem] bg-rose-50">

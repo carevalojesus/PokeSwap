@@ -2,7 +2,7 @@
 
 La tarea #4 implementa el servicio `createRegistrationService(DB)` en `src/server/registration/register.ts`. Su función `register(input)` guarda cuenta, alias, inicial e historial y devuelve únicamente el ID interno, el alias y los identificadores del inicial confirmado.
 
-La capa de dominio y persistencia de #4 está conectada al adaptador HTTP, sesiones, login/logout y recuperación autenticada implementados en #5; ver [autenticación](AUTENTICACION.md). El formulario pertenece a #7. La foto opcional se incorporará mediante el flujo de medios de #9, después de confirmar la cuenta.
+La capa de dominio y persistencia de #4 está conectada al adaptador HTTP, sesiones, login/logout y recuperación autenticada implementados en #5; ver [autenticación](AUTENTICACION.md). El formulario está conectado en #7 mediante React Hook Form/Zod. La validación común vive en `src/shared/schemas/registration.ts` y el adaptador HTTP usa `src/shared/schemas/auth.ts`; el dominio vuelve a validar antes de persistir. Ver [acceso desde la interfaz](ACCESO.md). La foto opcional se incorporará mediante el flujo de medios de #9, después de confirmar la cuenta.
 
 ## Validación y normalización
 
