@@ -43,3 +43,22 @@ for (const headers of [
   }
 }
 console.log('OK API: salud y rutas desconocidas, con fetch y navegación.');
+
+// Public catalog assets must be real images, not a successful SPA fallback.
+for (const id of [1, 25, 150, 151]) {
+  const path = `/pokemon/${id}.png`;
+  const response = await request(path);
+  assert.equal(response.status, 200, path);
+  assert.match(response.headers.get('content-type') ?? '', /image\/png/);
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  assert.deepEqual(
+    Array.from(bytes.slice(0, 8)),
+    [137, 80, 78, 71, 13, 10, 26, 10],
+  );
+  const header = new DataView(bytes.buffer);
+  assert.equal(header.getUint32(16), 475);
+  assert.equal(header.getUint32(20), 475);
+}
+console.log(
+  'OK public catalog: Bulbasaur, Pikachu, Mewtwo and Mew PNG assets.',
+);

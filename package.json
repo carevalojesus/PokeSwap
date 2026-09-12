@@ -15,7 +15,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "check": "npm run format:check && npm run lint && npm run db:check && npm run test && npm run build",
+    "check": "npm run format:check && npm run lint && npm run db:check && npm run catalog:check && npm run test && npm run build",
     "deploy": "npm run build && wrangler deploy",
     "cf:types": "wrangler types",
     "smoke": "node scripts/smoke.mjs",
@@ -24,7 +24,9 @@
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:test": "wrangler d1 migrations apply DB --env test --remote",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
-    "db:migrations:list": "wrangler d1 migrations list DB --local"
+    "db:migrations:list": "wrangler d1 migrations list DB --local",
+    "catalog:import": "node scripts/import-catalog.mjs",
+    "catalog:check": "node scripts/check-catalog.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

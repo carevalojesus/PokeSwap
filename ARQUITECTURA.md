@@ -195,7 +195,7 @@ La ausencia de cupo global en la regla de PokéDrops no implica capacidad técni
 
 ### Catálogo y sorteos
 
-Se importan las 151 especies para que una caída de PokéAPI no interrumpa registros ni sorteos. Las imágenes públicas se preparan como recursos de presentación; no intervienen en decisiones del juego.
+La tarea #3 incorpora las 151 especies y sus ilustraciones locales; ver [catálogo y sorteos](docs/CATALOGO.md). Se importan durante mantenimiento para que una caída de PokéAPI no interrumpa registros ni sorteos. Las imágenes públicas se preparan como recursos de presentación; no intervienen en decisiones del juego.
 
 El backend mantiene una función común de sorteo y una versión del balance. Mewtwo y Mew tienen 0,1 % cada uno por sorteo; las otras 149 especies comparten el 99,8 %. Se permiten repetidos. La meta y el ranking cuentan las especies #001–#150; Mew aparece como adicional. El detalle del algoritmo está en el README y no cambia por animaciones, sonidos ni preferencias del dispositivo.
 

@@ -26,12 +26,6 @@ const user = (role: 'student' | 'teacher' = 'student') => ({
 
 beforeAll(async () => {
   await applyD1Migrations(env.DB, inject('migrations'));
-  await db.insert(s.pokemonSpecies).values([
-    { id: 1, name: 'bulbasaur', imagePath: '/fixtures/1.webp' },
-    { id: 25, name: 'pikachu', imagePath: '/fixtures/25.webp' },
-    { id: 150, name: 'mewtwo', imagePath: '/fixtures/150.webp' },
-    { id: 151, name: 'mew', imagePath: '/fixtures/151.webp' },
-  ]);
 });
 
 async function fixture() {
@@ -137,7 +131,7 @@ describe('D1 migrations and identity', () => {
     await applyD1Migrations(env.DB, inject('migrations'));
     expect(
       (await env.DB.prepare('SELECT name FROM d1_migrations').all()).results,
-    ).toHaveLength(2);
+    ).toHaveLength(inject('migrations').length);
     expect(
       (await env.DB.prepare('PRAGMA foreign_key_check').all()).results,
     ).toEqual([]);
