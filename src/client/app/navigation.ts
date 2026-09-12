@@ -12,6 +12,7 @@ import {
 export const studentNavigation = [
   { to: '/', label: 'Inicio', icon: House },
   { to: '/coleccion', label: 'Colección', icon: Layers },
+  { to: '/pokedrops', label: 'PokéDrops', icon: Gift },
   { to: '/pokedex', label: 'Pokédex', icon: BookOpen },
   { to: '/intercambios', label: 'Intercambios', icon: ArrowLeftRight },
   { to: '/ranking', label: 'Ranking', icon: Trophy },

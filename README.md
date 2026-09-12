@@ -4,7 +4,7 @@
 
 PWA educativa para estudiantes de SENATI: recibe Pokémon aleatorios, acumula ejemplares y cambia tus repetidos con compañeros mediante códigos QR. El profesor distribuye nuevos Pokémon con PokéDrops.
 
-**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección agrupada, los duplicados y el progreso sobre 150 especies están implementados; ver [colección](docs/COLECCION.md). Los PokéDrops siguen pendientes. Las fotos privadas con recorte y R2 están implementadas; ver [fotos y recuperación](docs/FOTOS.md). Las funciones del juego y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
+**Estado actual:** base de React, Vite y TypeScript implementada con API Hono en Cloudflare Workers. Incluye inicio, navegación móvil y docente, Pokédex pública con búsqueda/fichas, ruta de salud, pruebas y configuración de despliegue; ver [interfaz y alcance](docs/INTERFAZ.md). D1 dispone de esquema, migraciones y pruebas de integridad. El catálogo de 151 especies, sus imágenes locales y la función de sorteo versionada están implementados; el servicio de registro atómico ya utiliza el sorteo. El registro, login/logout, sesión y permisos ya están conectados a formularios y rutas protegidas. El perfil propio permite editar nombres y nacimiento con control de versión; se muestra la entrega inicial confirmada. La colección agrupada, los duplicados y el progreso sobre 150 especies están implementados; ver [colección](docs/COLECCION.md). Los PokéDrops ya permiten creación, consulta, cancelación y canje único de tres ejemplares; ver [PokéDrops](docs/POKEDROPS.md). Las fotos privadas con recorte y R2 están implementadas; ver [fotos y recuperación](docs/FOTOS.md). Las funciones del juego y la PWA siguen pendientes en [GitHub Projects](https://github.com/users/carevalojesus/projects/6/views/2).
 
 **Autor:** [Christian Arevalo Jesus](https://github.com/carevalojesus).
 
@@ -209,7 +209,7 @@ El esquema y sus migraciones ya están implementados. El [modelo de datos](docs/
 
 `users.age` no existe: la edad se calcula en las respuestas privadas. Los objetos de R2 están asociados a una operación y a un usuario; ninguna foto se considera persistida solamente por estar en memoria o en `localStorage`.
 
-Registro, login/logout, sesión, perfil editable, fotos privadas, colección propia y consulta docente individual están implementados. El listado paginado sigue pendiente. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
+Registro, login/logout, sesión, perfil editable, fotos privadas, colección propia, PokéDrops y consulta docente individual están implementados. El listado paginado sigue pendiente. Ver [perfil editable](docs/PERFIL.md). Ver [contratos y seguridad](docs/AUTENTICACION.md).
 
 | Método y ruta | Contrato |
 |---|---|
@@ -217,6 +217,12 @@ Registro, login/logout, sesión, perfil editable, fotos privadas, colección pro
 | `POST /api/auth/login` | Recibe `senatiId` y `password`; recupera la misma cuenta y colección. |
 | `POST /api/auth/logout` | Revoca la sesión actual. |
 | `GET /api/auth/session` | Devuelve ID interno, rol y vencimiento de la sesión autenticada. |
+| `POST /api/admin/drops` | Crea una entrega docente idempotente; 30 minutos por defecto (1–1440). |
+| `GET /api/admin/drops` | Últimas 50 entregas propias y cantidades de canjes. |
+| `GET /api/admin/drops/:id` | Recupera detalle y código para el docente creador. |
+| `POST /api/admin/drops/:id/cancel` | Cancela nuevos canjes sin revocar premios existentes. |
+| `POST /api/drops/preview` | Consulta un código y recupera el premio previo del alumno; no entrega ejemplares. |
+| `POST /api/drops/redeem` | Canje atómico de tres ejemplares; el reintento devuelve el mismo premio. |
 | `GET /api/me/collection` | Colección del alumno autenticado: cantidades agrupadas, protegidos, reservas activas, disponibles y progreso #001–#150; Mew adicional. |
 | `GET /api/me` | Devuelve perfil propio, edad calculada, alias, URL interna de foto y versión de perfil. Nunca devuelve el hash de contraseña. |
 | `PATCH /api/me/profile` | Guarda nombres, apellidos y fecha de nacimiento propios con validación y control de versión; no cambia ID de SENATI ni alias. |
@@ -257,14 +263,14 @@ El objetivo es entregar este flujo funcional durante la jornada. La integridad d
 - [x] Cargas inválidas se rechazan; un alumno no puede modificar la foto de otro.
 - [x] Sustituir o eliminar una foto actualiza el perfil; las tareas de limpieza no eliminan archivos vigentes.
 - [x] Un fallo entre R2 y D1 y un reintento de carga no dejan una referencia rota ni varias operaciones confirmadas.
-- [ ] Inicial y PokéDrops comparten probabilidades: Mewtwo 0,1 %, Mew 0,1 % y otras 149 especies 99,8 % en conjunto.
-- [ ] Casos controlados verifican las tres ramas del sorteo y permiten Mew y Mewtwo repetidos sin exigir su aparición en una muestra aleatoria.
+- [x] Inicial y PokéDrops comparten probabilidades: Mewtwo 0,1 %, Mew 0,1 % y otras 149 especies 99,8 % en conjunto.
+- [x] Casos controlados verifican las tres ramas del sorteo y permiten Mew y Mewtwo repetidos sin exigir su aparición en una muestra aleatoria.
 
-- [ ] Un inicial más un PokéDrop producen cuatro ejemplares, admitiendo repetidos.
-- [ ] Cinco Pikachu se muestran como cantidad 5 y una especie en la Pokédex.
-- [ ] El inicial y los PokéDrops solo generan IDs del 1 al 151, incluidos Mew y Mewtwo.
+- [x] Un inicial más un PokéDrop producen cuatro ejemplares, admitiendo repetidos.
+- [x] Cinco Pikachu se muestran como cantidad 5 y una especie en la Pokédex.
+- [x] El inicial y los PokéDrops solo generan IDs del 1 al 151, incluidos Mew y Mewtwo.
 - [ ] Mew se guarda y muestra en la colección y como entrada adicional en la Pokédex; sus duplicados se intercambian, pero no modifican el progreso ni el ranking de los primeros 150.
-- [ ] Reintentar un registro o canje no duplica recompensas.
+- [x] Reintentar un registro o canje no duplica recompensas.
 - [ ] Solo pueden intercambiarse duplicados propios y disponibles.
 - [ ] La aceptación transfiere ambos ejemplares o ninguno, una sola vez.
 - [ ] Expiración, rechazo y cancelación liberan reservas.
@@ -276,7 +282,7 @@ Las pruebas de repetidos usan datos controlados para verificar reglas sin depend
 
 ## Documentación y ejecución
 
-Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Los servicios del juego siguen pendientes. La base, el esquema D1 y sus comandos se detallan a continuación; [DATOS.md](docs/DATOS.md) documenta migraciones y garantías de almacenamiento.
+Este README define registro, perfiles persistentes, reglas, probabilidades, alcance del MVP y criterios de aceptación. [ARQUITECTURA.md](ARQUITECTURA.md) complementa esas reglas con las decisiones técnicas, bibliotecas, experiencia visual y sonora, organización del código y estrategia de validación. Colección y PokéDrops están implementados; intercambios y ranking siguen pendientes. La base, el esquema D1 y sus comandos se detallan a continuación; [DATOS.md](docs/DATOS.md) documenta migraciones y garantías de almacenamiento.
 
 ### Requisitos e instalación
 
@@ -330,7 +336,7 @@ Las pruebas de humo verifican inicio, colección, Pokédex, ruta docente, fallba
 
 ### Despliegue y credenciales
 
-**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable, Pokédex pública, registro/login, perfil e inicial persistentes. La colección incluye cantidades, reservas y progreso. Los PokéDrops e intercambios siguen pendientes.
+**Base publicada:** [PokéSwap Classroom](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev) · [Salud de la API](https://pokeswap-classroom.christian-ar-valo-jes-s.workers.dev/api/health). Incluye navegación adaptable, Pokédex pública, registro/login, perfil e inicial persistentes. La colección incluye cantidades, reservas y progreso. Los PokéDrops están implementados mediante código; QR/cámara e intercambios siguen pendientes.
 
 La configuración está en `wrangler.jsonc`; el Worker se llama `pokeswap-classroom`. Vite genera la configuración final del despliegue junto al build. Los scripts usan Wrangler instalado en el proyecto, sin depender de la versión global.
 
